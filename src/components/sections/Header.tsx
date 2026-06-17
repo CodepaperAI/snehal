@@ -1,5 +1,7 @@
+'use client';
+
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useTranslation, type Language } from '../../context/TranslationContext';
@@ -110,7 +112,7 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
           
           {/* Logo */}
-          <Link to="/" className="flex flex-col group cursor-pointer select-none">
+          <Link href="/" className="flex flex-col group cursor-pointer select-none">
             <span className="font-serif text-lg md:text-xl tracking-[0.2em] font-medium text-white group-hover:text-gold transition-colors duration-300">
               GLOBAL REALTY
             </span>
@@ -121,7 +123,7 @@ export default function Header() {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden xl:flex items-center space-x-8">
-            <Link to="/" className="text-sm tracking-widest uppercase text-white/90 hover:text-gold transition-colors duration-300">
+            <Link href="/" className="text-sm tracking-widest uppercase text-white/90 hover:text-gold transition-colors duration-300">
               {t('home')}
             </Link>
 
@@ -147,7 +149,7 @@ export default function Header() {
                   >
                     <div className="space-y-3">
                       {menuSections.properties.items.map((item, idx) => (
-                        <Link key={idx} to={item.href} className="block cursor-pointer py-1 group/item">
+                        <Link key={idx} href={item.href} className="block cursor-pointer py-1 group/item">
                           <h4 className="text-xs font-semibold uppercase tracking-wider text-white group-hover/item:text-gold transition-colors duration-200">
                             {t(item.labelKey)}
                           </h4>
@@ -181,7 +183,7 @@ export default function Header() {
                   >
                     <div className="space-y-3">
                       {menuSections.invest.items.map((item, idx) => (
-                        <Link key={idx} to={item.href} className="block cursor-pointer py-1 group/item">
+                        <Link key={idx} href={item.href} className="block cursor-pointer py-1 group/item">
                           <h4 className="text-xs font-semibold uppercase tracking-wider text-white group-hover/item:text-gold transition-colors duration-200">
                             {t(item.labelKey)}
                           </h4>
@@ -215,7 +217,7 @@ export default function Header() {
                   >
                     <div className="space-y-3">
                       {menuSections.relocation.items.map((item, idx) => (
-                        <Link key={idx} to={item.href} className="block cursor-pointer py-1 group/item">
+                        <Link key={idx} href={item.href} className="block cursor-pointer py-1 group/item">
                           <h4 className="text-xs font-semibold uppercase tracking-wider text-white group-hover/item:text-gold transition-colors duration-200">
                             {t(item.labelKey)}
                           </h4>
@@ -227,10 +229,10 @@ export default function Header() {
               </AnimatePresence>
             </div>
 
-            <Link to="/blog" className="text-sm tracking-widest uppercase text-white/90 hover:text-gold transition-colors duration-300">
+            <Link href="/blog" className="text-sm tracking-widest uppercase text-white/90 hover:text-gold transition-colors duration-300">
               {t('blog')}
             </Link>
-            <Link to="/about" className="text-sm tracking-widest uppercase text-white/90 hover:text-gold transition-colors duration-300">
+            <Link href="/about" className="text-sm tracking-widest uppercase text-white/90 hover:text-gold transition-colors duration-300">
               {t('about')}
             </Link>
           </nav>
@@ -277,7 +279,7 @@ export default function Header() {
             </div>
 
             <Link 
-              to="/about"
+              href="/about"
               className="px-6 py-2.5 text-xs font-semibold tracking-widest uppercase border border-gold/45 text-gold hover:text-charcoal hover:bg-gold transition-all duration-300 rounded-sm cursor-pointer magnetic-btn relative overflow-hidden"
             >
               {t('cta')}
@@ -310,7 +312,7 @@ export default function Header() {
             {/* Navigation links in drawer */}
             <div className="flex flex-col space-y-6 flex-grow">
               <Link 
-                to="/" 
+                href="/" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-lg font-serif tracking-widest text-white hover:text-gold transition-colors border-b border-white/5 pb-2"
               >
@@ -321,13 +323,13 @@ export default function Header() {
               <div className="space-y-3">
                 <span className="text-xs uppercase tracking-[0.25em] text-gold font-medium">{t('properties')}</span>
                 <div className="pl-4 space-y-3 flex flex-col border-l border-gold/20">
-                  <Link to="/buy" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
+                  <Link href="/buy" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
                     {t('buy')}
                   </Link>
-                  <Link to="/rent" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
+                  <Link href="/rent" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
                     {t('rent')}
                   </Link>
-                  <Link to="/new-projects" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
+                  <Link href="/new-projects" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
                     {t('newProjects')}
                   </Link>
                 </div>
@@ -337,10 +339,10 @@ export default function Header() {
               <div className="space-y-3">
                 <span className="text-xs uppercase tracking-[0.25em] text-gold font-medium">{t('invest')}</span>
                 <div className="pl-4 space-y-3 flex flex-col border-l border-gold/20">
-                  <Link to="/invest" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
+                  <Link href="/invest" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
                     {t('invest')}
                   </Link>
-                  <Link to="/indian-investors" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
+                  <Link href="/indian-investors" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
                     {t('indianInvestors')}
                   </Link>
                 </div>
@@ -350,24 +352,24 @@ export default function Header() {
               <div className="space-y-3">
                 <span className="text-xs uppercase tracking-[0.25em] text-gold font-medium">{t('relocation')}</span>
                 <div className="pl-4 space-y-3 flex flex-col border-l border-gold/20">
-                  <Link to="/relocation" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
+                  <Link href="/relocation" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
                     {t('relocation')}
                   </Link>
-                  <Link to="/areas" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
+                  <Link href="/areas" onClick={() => setMobileMenuOpen(false)} className="text-sm text-white/80 hover:text-gold transition-colors">
                     {t('areas')}
                   </Link>
                 </div>
               </div>
 
               <Link 
-                to="/blog" 
+                href="/blog" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-lg font-serif tracking-widest text-white hover:text-gold transition-colors border-b border-white/5 pb-2 pt-2"
               >
                 {t('blog')}
               </Link>
               <Link 
-                to="/about" 
+                href="/about" 
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-lg font-serif tracking-widest text-white hover:text-gold transition-colors border-b border-white/5 pb-2"
               >
@@ -395,7 +397,7 @@ export default function Header() {
               </div>
 
               <Link 
-                to="/about"
+                href="/about"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block w-full py-3.5 text-center text-xs font-semibold tracking-widest uppercase bg-gradient-gold text-charcoal hover:bg-gold-light transition-colors rounded-sm cursor-pointer"
               >

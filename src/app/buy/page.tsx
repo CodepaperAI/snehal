@@ -1,7 +1,9 @@
+'use client';
+
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Map, Grid, BedDouble, Bath, Square, ChevronDown, Check, ArrowRight, X } from 'lucide-react';
-import Footer from '../components/sections/Footer';
+import Footer from '../../components/sections/Footer';
 
 interface Property {
   id: number;

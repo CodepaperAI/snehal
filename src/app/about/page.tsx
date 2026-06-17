@@ -1,7 +1,9 @@
+'use client';
+
 import { motion } from 'framer-motion';
 import { ShieldCheck, Network, PiggyBank, ArrowRight } from 'lucide-react';
-import FounderProfile from '../components/sections/FounderProfile';
-import Footer from '../components/sections/Footer';
+import FounderProfile from '../../components/sections/FounderProfile';
+import Footer from '../../components/sections/Footer';
 
 export default function About() {
   const values = [

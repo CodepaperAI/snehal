@@ -1,4 +1,7 @@
+'use client';
+
 import { Mail, Phone, MapPin } from 'lucide-react';
+import Link from 'next/link';
 
 export default function Footer() {
   const handleSubscribe = (e: React.FormEvent) => {
@@ -45,10 +48,10 @@ export default function Footer() {
             Properties
           </h4>
           <ul className="space-y-2.5 text-sm font-light pl-3">
-            <li><a href="/buy" className="hover:text-gold transition-colors duration-250">Buy Property</a></li>
-            <li><a href="/rent" className="hover:text-gold transition-colors duration-250">Rent Property</a></li>
-            <li><a href="/new-projects" className="hover:text-gold transition-colors duration-250">New Projects</a></li>
-            <li><a href="/areas" className="hover:text-gold transition-colors duration-250">Areas Guide</a></li>
+            <li><Link href="/buy" className="hover:text-gold transition-colors duration-250">Buy Property</Link></li>
+            <li><Link href="/rent" className="hover:text-gold transition-colors duration-250">Rent Property</Link></li>
+            <li><Link href="/new-projects" className="hover:text-gold transition-colors duration-250">New Projects</Link></li>
+            <li><Link href="/areas" className="hover:text-gold transition-colors duration-250">Areas Guide</Link></li>
           </ul>
         </div>
 
@@ -58,10 +61,10 @@ export default function Footer() {
             Advisory Paths
           </h4>
           <ul className="space-y-2.5 text-sm font-light pl-3">
-            <li><a href="/invest" className="hover:text-gold transition-colors duration-250">Invest in Panama</a></li>
-            <li><a href="/indian-investors" className="hover:text-gold transition-colors duration-250">For Indian Investors</a></li>
-            <li><a href="/relocation" className="hover:text-gold transition-colors duration-250">Expat & Family Relocation</a></li>
-            <li><a href="/about" className="hover:text-gold transition-colors duration-250">About Our Network</a></li>
+            <li><Link href="/invest" className="hover:text-gold transition-colors duration-250">Invest in Panama</Link></li>
+            <li><Link href="/indian-investors" className="hover:text-gold transition-colors duration-250">For Indian Investors</Link></li>
+            <li><Link href="/relocation" className="hover:text-gold transition-colors duration-250">Expat & Family Relocation</Link></li>
+            <li><Link href="/about" className="hover:text-gold transition-colors duration-250">About Our Network</Link></li>
           </ul>
         </div>
 

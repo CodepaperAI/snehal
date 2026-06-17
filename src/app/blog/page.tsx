@@ -1,5 +1,5 @@
-import BlogSEO from '../components/sections/BlogSEO';
-import Footer from '../components/sections/Footer';
+import BlogSEO from '../../components/sections/BlogSEO';
+import Footer from '../../components/sections/Footer';
 
 export default function Blog() {
   return (
