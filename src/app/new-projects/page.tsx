@@ -3,7 +3,7 @@ import PropertyExplorer from '../../components/sections/PropertyExplorer';
 export default function NewProjects() {
   return (
     <PropertyExplorer
-      listingType="sale"
+      listingType="project"
       take={24}
       eyebrow="New Developments"
       titleTop="New Projects &"

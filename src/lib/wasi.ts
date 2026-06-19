@@ -22,6 +22,7 @@ type WasiProperty = {
   rent_price?: string | number;
   rent_price_label?: string;
   observations?: string;
+  id_property_condition?: string | number;
   bedrooms?: string | number;
   bathrooms?: string | number;
   area?: string | number;
@@ -44,6 +45,7 @@ export type WasiSearchParams = {
   skip?: number;
   forSale?: boolean;
   forRent?: boolean;
+  propertyConditionId?: number | string;
   orderBy?: 'id_property' | 'created_at' | 'sale_price' | 'rent_price' | 'max_price' | 'min_price';
   order?: 'asc' | 'desc';
   short?: boolean;
@@ -210,6 +212,9 @@ export async function getWasiProjects(params: WasiSearchParams = {}) {
 
   if (params.forSale ?? true) body.set('for_sale', 'true');
   if (params.forRent) body.set('for_rent', 'true');
+  if (params.propertyConditionId) {
+    body.set('id_property_condition', String(params.propertyConditionId));
+  }
 
   const response = await fetch(`${WASI_BASE_URL}/property/search`, {
     method: 'POST',

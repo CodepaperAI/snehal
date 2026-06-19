@@ -43,7 +43,7 @@ type WasiPropertiesResponse = {
 
 export type PropertyExplorerProps = {
   /** Which Wasi listing pool to request. */
-  listingType?: 'sale' | 'rent';
+  listingType?: 'sale' | 'rent' | 'project';
   /** Number of listings to request from the API. */
   take?: number;
   eyebrow: string;

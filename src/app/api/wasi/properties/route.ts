@@ -1,18 +1,36 @@
 import { NextResponse } from 'next/server';
 import { getWasiProjects } from '../../../../lib/wasi';
 
+type WasiListingType = 'sale' | 'rent' | 'project';
+
+function getListingType(value: string | null): WasiListingType {
+  if (value === 'rent' || value === 'project') return value;
+  return 'sale';
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type') === 'rent' ? 'rent' : 'sale';
+    const type = getListingType(searchParams.get('type'));
     const take = Math.min(Math.max(Number(searchParams.get('take')) || 12, 1), 50);
 
-    const projects = await getWasiProjects({
-      take,
-      forSale: type === 'sale',
-      forRent: type === 'rent',
-      short: false,
-    });
+    const projects = type === 'project'
+      ? Array.from(
+          new Map(
+            (await Promise.all([
+              getWasiProjects({ take, forSale: true, propertyConditionId: 3, short: false }),
+              getWasiProjects({ take, forSale: true, propertyConditionId: 4, short: false }),
+            ]))
+              .flat()
+              .map((project) => [project.id, project]),
+          ).values(),
+        ).slice(0, take)
+      : await getWasiProjects({
+          take,
+          forSale: type === 'sale',
+          forRent: type === 'rent',
+          short: false,
+        });
 
     return NextResponse.json({
       status: 'success',
