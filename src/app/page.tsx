@@ -7,6 +7,9 @@ import BlogSEO from '../components/sections/BlogSEO';
 import Footer from '../components/sections/Footer';
 import { getFeaturedProjects } from '../lib/wasi';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function Home() {
   const featuredProjects = await getFeaturedProjects();
 

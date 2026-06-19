@@ -219,7 +219,7 @@ export async function getWasiProjects(params: WasiSearchParams = {}) {
   const response = await fetch(`${WASI_BASE_URL}/property/search`, {
     method: 'POST',
     body,
-    next: { revalidate: 300 },
+    cache: 'no-store',
   });
 
   if (!response.ok) {

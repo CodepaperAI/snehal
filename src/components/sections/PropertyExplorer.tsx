@@ -41,6 +41,8 @@ type WasiPropertiesResponse = {
   }>;
 };
 
+type LoadStatus = 'loading' | 'success' | 'error';
+
 export type PropertyExplorerProps = {
   /** Which Wasi listing pool to request. */
   listingType?: 'sale' | 'rent' | 'project';
@@ -166,7 +168,7 @@ export default function PropertyExplorer({
   backupLabel = 'Curated Backup Listings',
 }: PropertyExplorerProps) {
   const [liveProperties, setLiveProperties] = useState<Property[]>([]);
-  const [isLoadingLiveProperties, setIsLoadingLiveProperties] = useState(true);
+  const [loadStatus, setLoadStatus] = useState<LoadStatus>('loading');
   const [selectedArea, setSelectedArea] = useState('All Areas');
   const [selectedPrice, setSelectedPrice] = useState('All Prices');
   const [selectedBeds, setSelectedBeds] = useState('All Beds');
@@ -182,10 +184,20 @@ export default function PropertyExplorer({
 
   useEffect(() => {
     let isMounted = true;
+    const controller = new AbortController();
 
     async function loadLiveProperties() {
+      setLoadStatus('loading');
+      setLiveProperties([]);
+      setSelectedArea('All Areas');
+      setSelectedPrice('All Prices');
+      setSelectedBeds('All Beds');
+
       try {
-        const response = await fetch(`/api/wasi/properties?type=${listingType}&take=${take}`);
+        const response = await fetch(`/api/wasi/properties?type=${listingType}&take=${take}`, {
+          cache: 'no-store',
+          signal: controller.signal,
+        });
         const data = (await response.json()) as WasiPropertiesResponse;
 
         if (!response.ok || data.status !== 'success') {
@@ -210,12 +222,13 @@ export default function PropertyExplorer({
 
         if (isMounted) {
           setLiveProperties(mappedProperties);
+          setLoadStatus('success');
         }
       } catch (error) {
+        if (controller.signal.aborted) return;
         console.error(error);
-      } finally {
         if (isMounted) {
-          setIsLoadingLiveProperties(false);
+          setLoadStatus('error');
         }
       }
     }
@@ -224,10 +237,11 @@ export default function PropertyExplorer({
 
     return () => {
       isMounted = false;
+      controller.abort();
     };
   }, [listingType, take]);
 
-  const properties = liveProperties.length > 0 ? liveProperties : fallbackProperties;
+  const properties = liveProperties.length > 0 ? liveProperties : loadStatus === 'error' ? [] : fallbackProperties;
   const areas = ['All Areas', ...Array.from(new Set(properties.map((property) => property.area).filter(Boolean)))];
 
   // Filtering Logic
@@ -303,7 +317,7 @@ export default function PropertyExplorer({
             transition={{ duration: 0.8, delay: 0.45 }}
           >
             <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-            <span>{liveProperties.length > 0 ? `${liveProperties.length} ${liveLabel}` : isLoadingLiveProperties ? 'Loading Wasi Listings' : backupLabel}</span>
+            <span>{liveProperties.length > 0 ? `${liveProperties.length} ${liveLabel}` : loadStatus === 'loading' ? 'Loading Wasi Listings' : backupLabel}</span>
           </motion.div>
         </div>
 
@@ -586,7 +600,7 @@ export default function PropertyExplorer({
           {/* Empty State */}
           {filteredProperties.length === 0 && (
             <div className="col-span-full py-24 text-center border border-dashed border-white/10 rounded-sm">
-              <span className="text-white/40 text-sm font-light uppercase tracking-widest">No listings match your selection criteria</span>
+              <span className="text-white/40 text-sm font-light uppercase tracking-widest">{loadStatus === 'error' ? 'Live listings could not be loaded. Check Wasi env vars and server network access.' : 'No listings match your selection criteria'}</span>
             </div>
           )}
         </div>

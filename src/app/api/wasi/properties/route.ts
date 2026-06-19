@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getWasiProjects } from '../../../../lib/wasi';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 type WasiListingType = 'sale' | 'rent' | 'project';
 
 function getListingType(value: string | null): WasiListingType {
@@ -32,12 +35,19 @@ export async function GET(request: Request) {
           short: false,
         });
 
-    return NextResponse.json({
-      status: 'success',
-      type,
-      total: projects.length,
-      projects,
-    });
+    return NextResponse.json(
+      {
+        status: 'success',
+        type,
+        total: projects.length,
+        projects,
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0',
+        },
+      },
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unable to fetch Wasi properties';
 
@@ -46,7 +56,12 @@ export async function GET(request: Request) {
         status: 'error',
         message,
       },
-      { status: 500 },
+      {
+        status: 500,
+        headers: {
+          'Cache-Control': 'no-store, max-age=0',
+        },
+      },
     );
   }
 }
