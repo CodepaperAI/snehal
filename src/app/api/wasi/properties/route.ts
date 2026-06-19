@@ -21,8 +21,8 @@ export async function GET(request: Request) {
       ? Array.from(
           new Map(
             (await Promise.all([
-              getWasiProjects({ take, forSale: true, propertyConditionId: 3, short: false }),
-              getWasiProjects({ take, forSale: true, propertyConditionId: 4, short: false }),
+              getWasiProjects({ take, forSale: true, propertyConditionId: 3, short: false, priceMode: 'sale' }),
+              getWasiProjects({ take, forSale: true, propertyConditionId: 4, short: false, priceMode: 'sale' }),
             ]))
               .flat()
               .map((project) => [project.id, project]),
@@ -33,6 +33,7 @@ export async function GET(request: Request) {
           forSale: type === 'sale',
           forRent: type === 'rent',
           short: false,
+          priceMode: type === 'rent' ? 'rent' : 'sale',
         });
 
     return NextResponse.json(
