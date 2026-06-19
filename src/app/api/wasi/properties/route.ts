@@ -29,19 +29,23 @@ export async function GET(request: Request) {
           ).values(),
         ).slice(0, take)
       : await getWasiProjects({
-          take,
+          take: type === 'rent' ? 50 : take,
           forSale: type === 'sale',
           forRent: type === 'rent',
           short: false,
           priceMode: type === 'rent' ? 'rent' : 'sale',
         });
 
+    const visibleProjects = type === 'rent'
+      ? projects.filter((project) => project.rawPrice > 0).slice(0, take)
+      : projects;
+
     return NextResponse.json(
       {
         status: 'success',
         type,
-        total: projects.length,
-        projects,
+        total: visibleProjects.length,
+        projects: visibleProjects,
       },
       {
         headers: {

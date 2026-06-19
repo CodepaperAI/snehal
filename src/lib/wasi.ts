@@ -157,13 +157,14 @@ function getPrice(property: WasiProperty, priceMode: 'sale' | 'rent' = 'sale') {
   const dollar = String.fromCharCode(36);
 
   if (priceMode === 'rent') {
-    return (
-      cleanText(property.rent_price_label) ||
-      (property.rent_price ? dollar + property.rent_price : '') ||
-      cleanText(property.sale_price_label) ||
-      (property.sale_price ? dollar + property.sale_price : '') ||
-      'Price on request'
-    );
+    const rentPrice = asNumber(property.rent_price);
+    const rentLabel = cleanText(property.rent_price_label);
+
+    if (rentPrice > 0) {
+      return rentLabel && asNumber(rentLabel) > 0 ? rentLabel : dollar + property.rent_price;
+    }
+
+    return 'Price on request';
   }
 
   return (
@@ -198,7 +199,7 @@ export function mapWasiPropertyToProject(property: WasiProperty, index = 0, pric
     ),
     price: getPrice(property, priceMode),
     rawPrice: priceMode === 'rent'
-      ? asNumber(property.rent_price) || asNumber(property.sale_price) || fallback.rawPrice
+      ? asNumber(property.rent_price)
       : asNumber(property.sale_price) || asNumber(property.rent_price) || fallback.rawPrice,
     developer: property.owner === 'allied' ? 'Wasi Allied Listing' : 'Wasi Listing',
     description: cleanText(property.observations, fallback.description),
