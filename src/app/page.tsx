@@ -5,13 +5,16 @@ import BentoAreaGuide from '../components/sections/BentoAreaGuide';
 import FounderProfile from '../components/sections/FounderProfile';
 import BlogSEO from '../components/sections/BlogSEO';
 import Footer from '../components/sections/Footer';
+import { getFeaturedProjects } from '../lib/wasi';
 
-export default function Home() {
+export default async function Home() {
+  const featuredProjects = await getFeaturedProjects();
+
   return (
     <>
       <Hero />
       <ValueProposition />
-      <FeaturedProjects />
+      <FeaturedProjects projects={featuredProjects} />
       <BentoAreaGuide />
       <FounderProfile />
       <BlogSEO />

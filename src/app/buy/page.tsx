@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Map, Grid, BedDouble, Bath, Square, ChevronDown, Check, ArrowRight, X } from 'lucide-react';
 import Footer from '../../components/sections/Footer';
@@ -16,10 +16,52 @@ interface Property {
   baths: number;
   size: string;
   image: string;
+  description?: string;
+  detailUrl?: string;
   coordinates: { x: number; y: number }; // Percentage coordinates on mock vector map
 }
 
+type WasiPropertiesResponse = {
+  status: string;
+  total: number;
+  projects: Array<{
+    id: number;
+    title: string;
+    location: string;
+    area?: string;
+    price: string;
+    rawPrice: number;
+    beds?: number;
+    baths?: number;
+    size?: string;
+    image: string;
+    description?: string;
+    detailUrl?: string;
+  }>;
+};
+
+function getMapCoordinates(index: number) {
+  const coordinates = [
+    { x: 55, y: 38 },
+    { x: 72, y: 48 },
+    { x: 42, y: 55 },
+    { x: 28, y: 68 },
+    { x: 15, y: 80 },
+    { x: 80, y: 32 },
+    { x: 62, y: 64 },
+    { x: 35, y: 42 },
+    { x: 47, y: 74 },
+    { x: 68, y: 28 },
+    { x: 22, y: 52 },
+    { x: 88, y: 58 },
+  ];
+
+  return coordinates[index % coordinates.length];
+}
+
 export default function BuyProperty() {
+  const [liveProperties, setLiveProperties] = useState<Property[]>([]);
+  const [isLoadingLiveProperties, setIsLoadingLiveProperties] = useState(true);
   const [selectedArea, setSelectedArea] = useState('All Areas');
   const [selectedPrice, setSelectedPrice] = useState('All Prices');
   const [selectedBeds, setSelectedBeds] = useState('All Beds');
@@ -30,11 +72,10 @@ export default function BuyProperty() {
   // Dropdown UI states
   const [activeFilter, setActiveFilter] = useState<'area' | 'price' | 'beds' | null>(null);
 
-  const areas = ['All Areas', 'Santa Maria', 'Costa del Este', 'Punta Pacifica', 'Casco Viejo', 'Buenaventura', 'Ocean Reef Islands'];
   const prices = ['All Prices', 'Under $750K', '$750K - $1.5M', '$1.5M - $3M', 'Over $3M'];
   const bedsOptions = ['All Beds', '2+ Beds', '3+ Beds', '4+ Beds', '5+ Beds'];
 
-  const properties: Property[] = [
+  const fallbackProperties: Property[] = [
     {
       id: 1,
       title: 'Ocean Reef Marina Penthouse',
@@ -115,6 +156,56 @@ export default function BuyProperty() {
     }
   ];
 
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadLiveProperties() {
+      try {
+        const response = await fetch('/api/wasi/properties');
+        const data = (await response.json()) as WasiPropertiesResponse;
+
+        if (!response.ok || data.status !== 'success') {
+          throw new Error('Unable to load live Wasi listings');
+        }
+
+        const mappedProperties = data.projects.map((project, index) => ({
+          id: project.id,
+          title: project.title,
+          location: project.location,
+          area: project.area || project.location || 'Panama',
+          price: project.price,
+          rawPrice: project.rawPrice,
+          beds: project.beds ?? 0,
+          baths: project.baths ?? 0,
+          size: project.size || 'Upon request',
+          image: project.image,
+          description: project.description,
+          detailUrl: project.detailUrl,
+          coordinates: getMapCoordinates(index),
+        }));
+
+        if (isMounted) {
+          setLiveProperties(mappedProperties);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        if (isMounted) {
+          setIsLoadingLiveProperties(false);
+        }
+      }
+    }
+
+    loadLiveProperties();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const properties = liveProperties.length > 0 ? liveProperties : fallbackProperties;
+  const areas = ['All Areas', ...Array.from(new Set(properties.map((property) => property.area).filter(Boolean)))];
+
   // Filtering Logic
   const filteredProperties = properties.filter(prop => {
     // Area filter
@@ -181,6 +272,15 @@ export default function BuyProperty() {
           >
             Browse signature villas, custom waterfront penthouses, and private estates. Filter by premier areas, budgets, or spaces.
           </motion.p>
+          <motion.div
+            className="mt-5 inline-flex items-center gap-2 rounded-full border border-gold/25 bg-gold/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-gold"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.45 }}
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-gold" />
+            <span>{liveProperties.length > 0 ? `${liveProperties.length} Live Wasi Listings` : isLoadingLiveProperties ? 'Loading Wasi Listings' : 'Curated Backup Listings'}</span>
+          </motion.div>
         </div>
 
         {/* Sticky Floating Filter Pill Bar */}
@@ -424,11 +524,11 @@ export default function BuyProperty() {
                   <div className="flex items-center justify-between text-xs text-white/50 border-y border-white/5 py-3 font-light">
                     <div className="flex items-center gap-1.5">
                       <BedDouble className="w-3.5 h-3.5 text-gold" />
-                      <span>{prop.beds} Beds</span>
+                      <span>{prop.beds > 0 ? `${prop.beds} Beds` : 'Beds TBD'}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Bath className="w-3.5 h-3.5 text-gold" />
-                      <span>{prop.baths} Baths</span>
+                      <span>{prop.baths > 0 ? `${prop.baths} Baths` : 'Baths TBD'}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Square className="w-3.5 h-3.5 text-gold" />
@@ -444,6 +544,16 @@ export default function BuyProperty() {
                     <span>Request Private Tour</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
+                  {prop.detailUrl && (
+                    <a
+                      href={prop.detailUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block text-center text-[10px] font-semibold uppercase tracking-widest text-white/45 transition-colors hover:text-gold"
+                    >
+                      View Wasi Listing
+                    </a>
+                  )}
                 </div>
               </motion.div>
             ))}
@@ -505,6 +615,22 @@ export default function BuyProperty() {
                       <h3 className="text-xl font-serif text-white">{activePropertyModal.title}</h3>
                       <p className="text-white/40 text-xs mt-1">{activePropertyModal.location} • {activePropertyModal.price}</p>
                     </div>
+
+                    {activePropertyModal.description && (
+                      <p className="max-h-24 overflow-y-auto pr-2 text-xs leading-relaxed text-white/55">
+                        {activePropertyModal.description}
+                      </p>
+                    )}
+                    {activePropertyModal.detailUrl && (
+                      <a
+                        href={activePropertyModal.detailUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex text-[10px] font-semibold uppercase tracking-widest text-gold hover:text-gold-light"
+                      >
+                        Open original Wasi listing
+                      </a>
+                    )}
 
                     <div className="space-y-3 pt-2">
                       <div>

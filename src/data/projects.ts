@@ -10,6 +10,7 @@ export interface Project {
   developer: string;
   cta1: string;
   cta2: string;
+  detailUrl?: string;
 }
 
 export const premiumProjects: Project[] = [

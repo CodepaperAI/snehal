@@ -5,14 +5,23 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, Check, X } from 'lucide-react';
 import { premiumProjects, type Project } from '../../data/projects';
 
-export default function FeaturedProjects() {
+type FeaturedProjectsProps = {
+  projects?: Project[];
+};
+
+export default function FeaturedProjects({ projects: liveProjects }: FeaturedProjectsProps) {
   const [activeCtaModal, setActiveCtaModal] = useState<{ project: Project; action: string } | null>(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   // Display the first 4 premium developments on the home page
-  const projects = premiumProjects.slice(0, 4);
+  const projects = (liveProjects && liveProjects.length > 0 ? liveProjects : premiumProjects).slice(0, 4);
 
   const handleCtaClick = (project: Project, action: string) => {
+    if (action === 'Open Listing' && project.detailUrl) {
+      window.open(project.detailUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
     setActiveCtaModal({ project, action });
   };
 
