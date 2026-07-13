@@ -1,10 +1,14 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronDown, MapPin, DollarSign, Home } from 'lucide-react';
 
 export default function Hero() {
+  const router = useRouter();
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '50760000000';
+
   // Search dropdown states
   const [activeSearchDropdown, setActiveSearchDropdown] = useState<'area' | 'budget' | 'type' | null>(null);
   
@@ -28,7 +32,7 @@ export default function Hero() {
 
   const areas = ['All Areas', 'Santa Maria', 'Costa del Este', 'Punta Pacifica', 'Casco Viejo', 'Ocean Reef Islands'];
   const budgets = ['Any Budget', '$300K - $500K', '$500K - $1M', '$1M - $3M', '$3M - $5M', '$5M+'];
-  const types = ['Property Type', 'Penthouse', 'Oceanfront Villa', 'Luxury Condo', 'Private Estate'];
+  const types = ['Property Type', 'Buy', 'Rent', 'New Projects', 'Penthouse', 'Oceanfront Villa', 'Luxury Condo', 'Private Estate'];
 
   const handleDropdownToggle = (type: 'area' | 'budget' | 'type') => {
     if (activeSearchDropdown === type) {
@@ -46,7 +50,21 @@ export default function Hero() {
   };
 
   const handleSearch = () => {
-    alert(`Searching for properties in ${selectedArea} with budget ${selectedBudget} and type ${selectedType}`);
+    const target =
+      selectedType === 'Rent'
+        ? '/rent'
+        : selectedType === 'New Projects'
+          ? '/new-projects'
+          : '/buy';
+    const params = new URLSearchParams();
+
+    if (selectedArea !== 'All Areas') params.set('area', selectedArea);
+    if (selectedBudget !== 'Any Budget') params.set('budget', selectedBudget);
+    if (!['Property Type', 'Buy', 'Rent', 'New Projects'].includes(selectedType)) {
+      params.set('propertyType', selectedType);
+    }
+
+    router.push(`${target}${params.toString() ? `?${params}` : ''}`);
   };
 
   return (
@@ -122,7 +140,7 @@ export default function Hero() {
             Browse Properties
           </a>
           <a
-            href="https://wa.me/50760000000"
+            href={`https://wa.me/${whatsappNumber}`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto px-8 py-4 bg-charcoal-light/40 hover:bg-charcoal-light/70 text-white border border-white/10 hover:border-gold/30 text-xs font-semibold tracking-widest uppercase transition-all duration-300 rounded-sm shadow-xl flex items-center justify-center gap-2.5 hover:scale-[1.02] backdrop-blur-sm cursor-pointer"

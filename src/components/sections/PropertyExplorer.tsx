@@ -175,6 +175,7 @@ export default function PropertyExplorer({
   const [showMapView, setShowMapView] = useState(false);
   const [activePropertyModal, setActivePropertyModal] = useState<Property | null>(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formError, setFormError] = useState('');
 
   // Dropdown UI states
   const [activeFilter, setActiveFilter] = useState<'area' | 'price' | 'beds' | null>(null);
@@ -270,13 +271,41 @@ export default function PropertyExplorer({
     setActiveFilter(activeFilter === type ? null : type);
   };
 
-  const handleLeadSubmit = (e: React.FormEvent) => {
+  const handleLeadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFormSubmitted(true);
-    setTimeout(() => {
-      setActivePropertyModal(null);
-      setFormSubmitted(false);
-    }, 2500);
+    setFormError('');
+    const formData = new FormData(e.currentTarget);
+
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: `${listingType}-property-explorer`,
+          name: formData.get('name'),
+          email: formData.get('email'),
+          phone: formData.get('phone'),
+          tourDate: formData.get('tourDate'),
+          tourType: formData.get('tourType'),
+          property: activePropertyModal?.title,
+          action: 'Request Private Tour',
+          message: `${activePropertyModal?.location ?? 'Panama'} / ${activePropertyModal?.price ?? 'Price on request'}`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Lead submission failed');
+      }
+
+      setFormSubmitted(true);
+      setTimeout(() => {
+        setActivePropertyModal(null);
+        setFormSubmitted(false);
+      }, 2500);
+    } catch (error) {
+      console.error(error);
+      setFormError('Unable to submit right now. Please use WhatsApp for fastest response.');
+    }
   };
 
   return (
@@ -674,6 +703,7 @@ export default function PropertyExplorer({
                       <div>
                         <label className="text-[9px] uppercase tracking-wider text-white/50 block mb-1">Your Full Name</label>
                         <input
+                          name="name"
                           type="text"
                           required
                           className="w-full px-4 py-2.5 bg-charcoal-light text-white text-xs border border-white/5 rounded-sm focus:border-gold focus:outline-none transition-colors"
@@ -684,6 +714,7 @@ export default function PropertyExplorer({
                         <div>
                           <label className="text-[9px] uppercase tracking-wider text-white/50 block mb-1">Email Address</label>
                           <input
+                            name="email"
                             type="email"
                             required
                             className="w-full px-4 py-2.5 bg-charcoal-light text-white text-xs border border-white/5 rounded-sm focus:border-gold focus:outline-none transition-colors"
@@ -692,6 +723,7 @@ export default function PropertyExplorer({
                         <div>
                           <label className="text-[9px] uppercase tracking-wider text-white/50 block mb-1">Phone (WhatsApp)</label>
                           <input
+                            name="phone"
                             type="tel"
                             required
                             placeholder="+91 / +507 ..."
@@ -704,6 +736,7 @@ export default function PropertyExplorer({
                         <div>
                           <label className="text-[9px] uppercase tracking-wider text-white/50 block mb-1">Preferred Tour Date</label>
                           <input
+                            name="tourDate"
                             type="date"
                             required
                             className="w-full px-4 py-2.5 bg-charcoal-light text-white text-xs border border-white/5 rounded-sm focus:border-gold focus:outline-none transition-colors"
@@ -711,13 +744,20 @@ export default function PropertyExplorer({
                         </div>
                         <div>
                           <label className="text-[9px] uppercase tracking-wider text-white/50 block mb-1">Tour Type</label>
-                          <select className="w-full px-4 py-2.5 bg-charcoal-light text-white text-xs border border-white/5 rounded-sm focus:border-gold focus:outline-none transition-colors">
+                          <select
+                            name="tourType"
+                            className="w-full px-4 py-2.5 bg-charcoal-light text-white text-xs border border-white/5 rounded-sm focus:border-gold focus:outline-none transition-colors"
+                          >
                             <option>In-Person Private Tour</option>
                             <option>Virtual Video Tour (WhatsApp/Zoom)</option>
                           </select>
                         </div>
                       </div>
                     </div>
+
+                    {formError && (
+                      <p className="text-xs leading-relaxed text-red-300">{formError}</p>
+                    )}
 
                     <button
                       type="submit"

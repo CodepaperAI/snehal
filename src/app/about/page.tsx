@@ -6,6 +6,7 @@ import FounderProfile from '../../components/sections/FounderProfile';
 import Footer from '../../components/sections/Footer';
 
 export default function About() {
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '50760000000';
   const values = [
     {
       icon: <ShieldCheck className="w-8 h-8 text-gold" />,
@@ -101,7 +102,7 @@ export default function About() {
             </p>
             <div className="pt-4 flex items-center justify-center">
               <a 
-                href="https://wa.me/50760000000"
+                href={`https://wa.me/${whatsappNumber}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-8 py-4 bg-gradient-gold hover:bg-gold-light text-charcoal text-[10px] tracking-widest font-bold uppercase transition-all duration-300 rounded-sm shadow-xl flex items-center justify-center gap-2 hover:scale-[1.02] cursor-pointer"

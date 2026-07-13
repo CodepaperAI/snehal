@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 
 export default function FloatingWhatsApp() {
-  const whatsappNumber = '50760000000'; // Authorized advisory line
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '50760000000';
   const prefilledText = encodeURIComponent(
     'Hello Global Realty Panama, I would like to schedule a private real estate consultation.'
   );

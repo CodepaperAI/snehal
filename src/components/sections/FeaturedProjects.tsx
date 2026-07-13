@@ -12,6 +12,7 @@ type FeaturedProjectsProps = {
 export default function FeaturedProjects({ projects: liveProjects }: FeaturedProjectsProps) {
   const [activeCtaModal, setActiveCtaModal] = useState<{ project: Project; action: string } | null>(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formError, setFormError] = useState('');
 
   // Display the first 4 premium developments on the home page
   const projects = (liveProjects && liveProjects.length > 0 ? liveProjects : premiumProjects).slice(0, 4);
@@ -25,15 +26,39 @@ export default function FeaturedProjects({ projects: liveProjects }: FeaturedPro
     setActiveCtaModal({ project, action });
   };
 
-  const handleLeadSubmit = (e: React.FormEvent) => {
+  const handleLeadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFormSubmitted(true);
-    // CRM Integration Stub:
-    // console.log("Submitting lead data to CRM:", { project: activeCtaModal?.project.title, action: activeCtaModal?.action });
-    setTimeout(() => {
-      setActiveCtaModal(null);
-      setFormSubmitted(false);
-    }, 2500);
+    setFormError('');
+    const formData = new FormData(e.currentTarget);
+
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: 'featured-projects',
+          name: formData.get('name'),
+          email: formData.get('email'),
+          phone: formData.get('phone'),
+          property: activeCtaModal?.project.title,
+          action: activeCtaModal?.action,
+          message: `Developer: ${activeCtaModal?.project.developer ?? 'Wasi listing'}`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Lead submission failed');
+      }
+
+      setFormSubmitted(true);
+      setTimeout(() => {
+        setActiveCtaModal(null);
+        setFormSubmitted(false);
+      }, 2500);
+    } catch (error) {
+      console.error(error);
+      setFormError('Unable to submit right now. Please use WhatsApp for fastest response.');
+    }
   };
 
   return (
@@ -128,6 +153,7 @@ export default function FeaturedProjects({ projects: liveProjects }: FeaturedPro
                       <div>
                         <label className="text-[9px] uppercase tracking-wider text-white/40 block mb-1">Your Full Name</label>
                         <input 
+                          name="name"
                           type="text" 
                           required 
                           className="w-full px-4 py-2.5 bg-charcoal-light text-white border border-white/5 rounded-sm focus:border-gold focus:outline-none transition-colors"
@@ -137,6 +163,7 @@ export default function FeaturedProjects({ projects: liveProjects }: FeaturedPro
                       <div>
                         <label className="text-[9px] uppercase tracking-wider text-white/40 block mb-1">Email Address</label>
                         <input 
+                          name="email"
                           type="email" 
                           required 
                           className="w-full px-4 py-2.5 bg-charcoal-light text-white border border-white/5 rounded-sm focus:border-gold focus:outline-none transition-colors"
@@ -146,6 +173,7 @@ export default function FeaturedProjects({ projects: liveProjects }: FeaturedPro
                       <div>
                         <label className="text-[9px] uppercase tracking-wider text-white/40 block mb-1">WhatsApp Number</label>
                         <input 
+                          name="phone"
                           type="tel" 
                           required 
                           placeholder="+91 / +507 ..."
@@ -158,6 +186,10 @@ export default function FeaturedProjects({ projects: liveProjects }: FeaturedPro
                         <span>Includes private brochure and current price guide.</span>
                       </div>
                     </div>
+
+                    {formError && (
+                      <p className="text-xs leading-relaxed text-red-300">{formError}</p>
+                    )}
 
                     <button 
                       type="submit" 

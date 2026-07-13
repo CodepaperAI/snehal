@@ -1,12 +1,41 @@
 'use client';
 
+import { useState } from 'react';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
 export default function Footer() {
-  const handleSubscribe = (e: React.FormEvent) => {
+  const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert('Thank you for subscribing to our private portfolio updates.');
+    const formData = new FormData(e.currentTarget);
+    setSubscribeStatus('idle');
+
+    try {
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          source: 'private-portfolio-newsletter',
+          name: 'Newsletter subscriber',
+          email: formData.get('email'),
+          phone: 'newsletter',
+          action: 'Subscribe',
+          message: 'Requested private portfolio updates, pre-construction drops, and residency updates.',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Newsletter submission failed');
+      }
+
+      setSubscribeStatus('success');
+      e.currentTarget.reset();
+    } catch (error) {
+      console.error(error);
+      setSubscribeStatus('error');
+    }
   };
 
   return (
@@ -78,6 +107,7 @@ export default function Footer() {
           </p>
           <form onSubmit={handleSubscribe} className="space-y-2.5 pl-3 pt-2">
             <input 
+              name="email"
               type="email" 
               required
               placeholder="Your email address" 
@@ -89,6 +119,12 @@ export default function Footer() {
             >
               Subscribe
             </button>
+            {subscribeStatus === 'success' && (
+              <p className="text-xs text-gold">Subscribed. Private updates will be sent to your inbox.</p>
+            )}
+            {subscribeStatus === 'error' && (
+              <p className="text-xs text-red-300">Could not subscribe right now. Please try WhatsApp.</p>
+            )}
           </form>
         </div>
 
