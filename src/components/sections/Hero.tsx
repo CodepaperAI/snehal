@@ -70,27 +70,17 @@ export default function Hero() {
   return (
     <section className="relative w-full h-screen flex flex-col justify-center items-center overflow-hidden bg-charcoal">
       
-      {/* Background Video with Dark Overlay */}
+      {/* Branded hero image with layered overlays for headline contrast */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
-        {/* Fullscreen Video Loop */}
-        <video
-          className="absolute inset-0 w-full h-full object-cover scale-[1.03] pointer-events-none"
-          autoPlay
-          loop
-          muted
-          playsInline
-          poster="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1920&q=80"
-        >
-          {/* Panama Skyline / Santa Maria style luxury night skyline and waterfront proxy */}
-          <source 
-            src="https://assets.mixkit.co/videos/preview/mixkit-skyline-of-a-large-city-with-skyscrapers-at-night-4927-large.mp4" 
-            type="video/mp4" 
-          />
-          Your browser does not support the video tag.
-        </video>
-        
-        {/* Elegant Ken Burns styled fallback background in case video fails to render or load */}
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal-dark/75 via-charcoal-dark/50 to-charcoal-dark/95 z-10" />
+        <img
+          src="/images/grp-home-hero.png"
+          alt="Global Realty Panama luxury office with Panama City skyline"
+          className="absolute inset-0 h-full w-full object-cover object-center scale-[1.02]"
+          fetchPriority="high"
+        />
+        <div className="absolute inset-0 bg-charcoal-dark/55" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(9,9,8,0.18)_0%,rgba(9,9,8,0.56)_46%,rgba(9,9,8,0.92)_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-charcoal-dark/40 via-charcoal-dark/20 to-charcoal-dark/95" />
       </div>
 
       {/* Hero Content Container */}
