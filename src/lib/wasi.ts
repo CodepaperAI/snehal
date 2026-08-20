@@ -54,6 +54,7 @@ export type WasiSearchParams = {
 
 export type WasiListingProject = Project & {
   area: string;
+  propertyType: string;
   beds: number;
   baths: number;
   size: string;
@@ -109,6 +110,11 @@ function decodeHtmlEntities(value: string) {
     ndash: '\u2013',
     mdash: '\u2014',
     hellip: '\u2026',
+    lsquo: '\u2018',
+    rsquo: '\u2019',
+    ldquo: '\u201c',
+    rdquo: '\u201d',
+    apos: "'",
   };
 
   const decodeOnce = (text: string) => text.replace(/&(#x?[0-9a-fA-F]+|[a-zA-Z][a-zA-Z0-9]+);/g, (match, entity: string) => {
@@ -212,6 +218,7 @@ export function mapWasiPropertyToProject(property: WasiProperty, index = 0, pric
     cta2: 'Open Listing',
     detailUrl: PROPERTY_DETAIL_URL.replace('[id]', String(id)),
     area: cleanText(property.zone_label || property.city_label || property.region_label, location),
+    propertyType: cleanText(property.property_type_label || property.property_condition_label, 'Property'),
     beds,
     baths,
     size,

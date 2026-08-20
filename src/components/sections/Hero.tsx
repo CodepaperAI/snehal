@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronDown, MapPin, DollarSign, Home } from 'lucide-react';
 
@@ -31,7 +32,9 @@ export default function Hero() {
   }, []);
 
   const areas = ['All Areas', 'Santa Maria', 'Costa del Este', 'Punta Pacifica', 'Casco Viejo', 'Ocean Reef Islands'];
-  const budgets = ['Any Budget', '$300K - $500K', '$500K - $1M', '$1M - $3M', '$3M - $5M', '$5M+'];
+  const budgets = selectedType === 'Rent'
+    ? ['Any Budget', 'Under $2K', '$2K - $4K', '$4K - $7.5K', '$7.5K+']
+    : ['Any Budget', '$300K - $500K', '$500K - $1M', '$1M - $3M', '$3M - $5M', '$5M+'];
   const types = ['Property Type', 'Buy', 'Rent', 'New Projects', 'Penthouse', 'Oceanfront Villa', 'Luxury Condo', 'Private Estate'];
 
   const handleDropdownToggle = (type: 'area' | 'budget' | 'type') => {
@@ -45,7 +48,10 @@ export default function Hero() {
   const handleSelect = (category: 'area' | 'budget' | 'type', value: string) => {
     if (category === 'area') setSelectedArea(value);
     if (category === 'budget') setSelectedBudget(value);
-    if (category === 'type') setSelectedType(value);
+    if (category === 'type') {
+      setSelectedType(value);
+      setSelectedBudget('Any Budget');
+    }
     setActiveSearchDropdown(null);
   };
 
@@ -70,17 +76,29 @@ export default function Hero() {
   return (
     <section className="relative w-full h-screen flex flex-col justify-center items-center overflow-hidden bg-charcoal">
       
-      {/* Branded hero image with layered overlays for headline contrast */}
+      {/* Portrait is layered over a soft ambient copy so its studio backdrop
+          dissolves naturally into the charcoal hero on every screen size. */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
-        <img
-          src="/images/grp-home-hero.png"
-          alt="Global Realty Panama luxury office with Panama City skyline"
-          className="absolute inset-0 h-full w-full object-cover object-center scale-[1.02]"
-          fetchPriority="high"
+        <Image
+          src="/images/snehal-hero-portrait.png"
+          alt="Snehal Panchal, Global Realty Panama real estate advisor"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[58%_24%] scale-110 blur-2xl opacity-35"
         />
-        <div className="absolute inset-0 bg-charcoal-dark/55" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(9,9,8,0.18)_0%,rgba(9,9,8,0.56)_46%,rgba(9,9,8,0.92)_100%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal-dark/40 via-charcoal-dark/20 to-charcoal-dark/95" />
+        <Image
+          src="/images/snehal-hero-portrait.png"
+          alt=""
+          fill
+          priority
+          sizes="(min-width: 768px) 58vw, 100vw"
+          aria-hidden="true"
+          className="object-cover object-[54%_20%] md:object-contain md:object-right-top opacity-90 [mask-image:linear-gradient(to_bottom,black_0%,black_78%,transparent_100%)] md:[mask-image:linear-gradient(to_right,transparent_0%,black_28%,black_82%,transparent_100%)]"
+        />
+        <div className="absolute inset-0 bg-charcoal-dark/45 md:bg-[linear-gradient(90deg,rgba(5,5,5,0.92)_0%,rgba(5,5,5,0.64)_43%,rgba(5,5,5,0.18)_74%,rgba(5,5,5,0.50)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(212,175,55,0.10)_0%,transparent_38%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-charcoal-dark/35 via-transparent to-charcoal-dark" />
       </div>
 
       {/* Hero Content Container */}

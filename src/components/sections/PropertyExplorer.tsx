@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Map, Grid, BedDouble, Bath, Square, ChevronDown, Check, ArrowRight, X } from 'lucide-react';
 import Footer from './Footer';
@@ -10,6 +11,7 @@ interface Property {
   title: string;
   location: string;
   area: string;
+  propertyType: string;
   price: string;
   rawPrice: number;
   beds: number;
@@ -30,6 +32,7 @@ type WasiPropertiesResponse = {
     title: string;
     location: string;
     area?: string;
+    propertyType?: string;
     price: string;
     rawPrice: number;
     beds?: number;
@@ -42,6 +45,51 @@ type WasiPropertiesResponse = {
 };
 
 type LoadStatus = 'loading' | 'success' | 'error';
+
+type FilterType = 'area' | 'price' | 'beds' | 'propertyType';
+
+const SALE_PRICE_OPTIONS = ['All Prices', '$300K - $500K', '$500K - $1M', '$1M - $3M', '$3M - $5M', '$5M+'];
+const RENT_PRICE_OPTIONS = ['All Prices', 'Under $2K', '$2K - $4K', '$4K - $7.5K', '$7.5K+'];
+
+function normalizeFilterValue(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function matchesPropertyType(property: Property, selectedType: string) {
+  if (selectedType === 'All Types') return true;
+
+  const requestedType = normalizeFilterValue(selectedType);
+  const actualType = normalizeFilterValue(`${property.propertyType} ${property.title}`);
+  const aliases: Record<string, string[]> = {
+    'luxury condo': ['condo', 'condominio', 'apartment', 'apartamento'],
+    'private estate': ['estate', 'villa', 'house', 'casa', 'residence', 'residencia'],
+    'oceanfront villa': ['oceanfront', 'beachfront', 'frente al mar', 'villa'],
+    penthouse: ['penthouse', 'atico'],
+  };
+
+  return (aliases[requestedType] ?? [requestedType]).some((alias) => actualType.includes(alias));
+}
+
+function getPriceRange(label: string): { min: number; max: number } | null {
+  const ranges: Record<string, { min: number; max: number }> = {
+    '$300K - $500K': { min: 300000, max: 500000 },
+    '$500K - $1M': { min: 500000, max: 1000000 },
+    '$1M - $3M': { min: 1000000, max: 3000000 },
+    '$3M - $5M': { min: 3000000, max: 5000000 },
+    '$5M+': { min: 5000000, max: Number.POSITIVE_INFINITY },
+    'Under $2K': { min: 0, max: 2000 },
+    '$2K - $4K': { min: 2000, max: 4000 },
+    '$4K - $7.5K': { min: 4000, max: 7500 },
+    '$7.5K+': { min: 7500, max: Number.POSITIVE_INFINITY },
+  };
+
+  return ranges[label] ?? null;
+}
 
 export type PropertyExplorerProps = {
   /** Which Wasi listing pool to request. */
@@ -82,6 +130,7 @@ const fallbackProperties: Property[] = [
     title: 'Ocean Reef Marina Penthouse',
     location: 'Ocean Reef Islands',
     area: 'Ocean Reef Islands',
+    propertyType: 'Penthouse',
     size: '580 m²',
     beds: 4,
     baths: 5.5,
@@ -95,6 +144,7 @@ const fallbackProperties: Property[] = [
     title: 'Santa Maria Fairway Villa',
     location: 'Santa Maria Golf Club',
     area: 'Santa Maria',
+    propertyType: 'Villa',
     size: '720 m²',
     beds: 5,
     baths: 6,
@@ -108,6 +158,7 @@ const fallbackProperties: Property[] = [
     title: 'Punta Pacifica Oceanfront Duplex',
     location: 'Punta Pacifica, High-Rise',
     area: 'Punta Pacifica',
+    propertyType: 'Duplex',
     size: '340 m²',
     beds: 3,
     baths: 3.5,
@@ -121,6 +172,7 @@ const fallbackProperties: Property[] = [
     title: 'Casco Viejo Historic Loft',
     location: 'Casco Viejo, Colonial District',
     area: 'Casco Viejo',
+    propertyType: 'Loft',
     size: '210 m²',
     beds: 2,
     baths: 2.5,
@@ -134,6 +186,7 @@ const fallbackProperties: Property[] = [
     title: 'Buenaventura Exclusive Estate',
     location: 'Buenaventura Resort',
     area: 'Buenaventura',
+    propertyType: 'Private Estate',
     size: '650 m²',
     beds: 5,
     baths: 5.5,
@@ -147,6 +200,7 @@ const fallbackProperties: Property[] = [
     title: 'Costa del Este Sky Villa',
     location: 'Costa del Este, Towers',
     area: 'Costa del Este',
+    propertyType: 'Luxury Condo',
     size: '420 m²',
     beds: 4,
     baths: 4.5,
@@ -167,21 +221,34 @@ export default function PropertyExplorer({
   liveLabel = 'Live Wasi Listings',
   backupLabel = 'Curated Backup Listings',
 }: PropertyExplorerProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const priceOptions = listingType === 'rent' ? RENT_PRICE_OPTIONS : SALE_PRICE_OPTIONS;
+  const queryPrice = searchParams.get('budget');
+  const selectedArea = searchParams.get('area') || 'All Areas';
+  const selectedPrice = queryPrice && priceOptions.includes(queryPrice) ? queryPrice : 'All Prices';
+  const selectedBeds = searchParams.get('beds') || 'All Beds';
+  const selectedPropertyType = searchParams.get('propertyType') || 'All Types';
   const [liveProperties, setLiveProperties] = useState<Property[]>([]);
   const [loadStatus, setLoadStatus] = useState<LoadStatus>('loading');
-  const [selectedArea, setSelectedArea] = useState('All Areas');
-  const [selectedPrice, setSelectedPrice] = useState('All Prices');
-  const [selectedBeds, setSelectedBeds] = useState('All Beds');
   const [showMapView, setShowMapView] = useState(false);
   const [activePropertyModal, setActivePropertyModal] = useState<Property | null>(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formError, setFormError] = useState('');
 
   // Dropdown UI states
-  const [activeFilter, setActiveFilter] = useState<'area' | 'price' | 'beds' | null>(null);
+  const [activeFilter, setActiveFilter] = useState<FilterType | null>(null);
 
-  const prices = ['All Prices', 'Under $750K', '$750K - $1.5M', '$1.5M - $3M', 'Over $3M'];
   const bedsOptions = ['All Beds', '2+ Beds', '3+ Beds', '4+ Beds', '5+ Beds'];
+
+  const updateQuery = (key: string, value: string, defaultValue: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === defaultValue) params.delete(key);
+    else params.set(key, value);
+    const query = params.toString();
+    router.replace(`${pathname}${query ? `?${query}` : ''}`, { scroll: false });
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -190,12 +257,9 @@ export default function PropertyExplorer({
     async function loadLiveProperties() {
       setLoadStatus('loading');
       setLiveProperties([]);
-      setSelectedArea('All Areas');
-      setSelectedPrice('All Prices');
-      setSelectedBeds('All Beds');
 
       try {
-        const response = await fetch(`/api/wasi/properties?type=${listingType}&take=${take}`, {
+        const response = await fetch(`/api/wasi/properties?type=${listingType}&take=50`, {
           cache: 'no-store',
           signal: controller.signal,
         });
@@ -210,6 +274,7 @@ export default function PropertyExplorer({
           title: project.title,
           location: project.location,
           area: project.area || project.location || 'Panama',
+          propertyType: project.propertyType || 'Property',
           price: project.price,
           rawPrice: project.rawPrice,
           beds: project.beds ?? 0,
@@ -242,20 +307,39 @@ export default function PropertyExplorer({
     };
   }, [listingType, take]);
 
-  const properties = liveProperties.length > 0 ? liveProperties : loadStatus === 'error' ? [] : fallbackProperties;
-  const areas = ['All Areas', ...Array.from(new Set(properties.map((property) => property.area).filter(Boolean)))];
+  const properties = liveProperties.length > 0
+    ? liveProperties
+    : listingType === 'rent' && loadStatus === 'error'
+      ? []
+      : fallbackProperties;
+  const areas = [
+    'All Areas',
+    ...Array.from(new Set([
+      ...(selectedArea !== 'All Areas' ? [selectedArea] : []),
+      ...properties.map((property) => property.area).filter(Boolean),
+    ])),
+  ];
+  const propertyTypes = [
+    'All Types',
+    ...Array.from(new Set([
+      ...(selectedPropertyType !== 'All Types' ? [selectedPropertyType] : []),
+      ...properties.map((property) => property.propertyType).filter(Boolean),
+    ])),
+  ];
 
   // Filtering Logic
   const filteredProperties = properties.filter(prop => {
     // Area filter
-    if (selectedArea !== 'All Areas' && prop.area !== selectedArea) return false;
+    if (selectedArea !== 'All Areas') {
+      const areaQuery = normalizeFilterValue(selectedArea);
+      const propertyLocation = normalizeFilterValue(`${prop.area} ${prop.location}`);
+      if (!propertyLocation.includes(areaQuery)) return false;
+    }
 
     // Price filter
-    if (selectedPrice !== 'All Prices') {
-      if (selectedPrice === 'Under $750K' && prop.rawPrice >= 750000) return false;
-      if (selectedPrice === '$750K - $1.5M' && (prop.rawPrice < 750000 || prop.rawPrice > 1500000)) return false;
-      if (selectedPrice === '$1.5M - $3M' && (prop.rawPrice < 1500000 || prop.rawPrice > 3000000)) return false;
-      if (selectedPrice === 'Over $3M' && prop.rawPrice <= 3000000) return false;
+    const priceRange = getPriceRange(selectedPrice);
+    if (priceRange && (prop.rawPrice < priceRange.min || prop.rawPrice > priceRange.max)) {
+      return false;
     }
 
     // Beds filter
@@ -264,10 +348,12 @@ export default function PropertyExplorer({
       if (prop.beds < minBeds) return false;
     }
 
-    return true;
-  });
+    if (!matchesPropertyType(prop, selectedPropertyType)) return false;
 
-  const toggleFilter = (type: 'area' | 'price' | 'beds') => {
+    return true;
+  }).slice(0, take);
+
+  const toggleFilter = (type: FilterType) => {
     setActiveFilter(activeFilter === type ? null : type);
   };
 
@@ -378,7 +464,10 @@ export default function PropertyExplorer({
                         {areas.map((area, idx) => (
                           <li key={idx}>
                             <button
-                              onClick={() => { setSelectedArea(area); setActiveFilter(null); }}
+                              onClick={() => {
+                                updateQuery('area', area, 'All Areas');
+                                setActiveFilter(null);
+                              }}
                               className={`w-full text-left px-4 py-2 text-xs font-medium tracking-wide transition-colors flex items-center justify-between ${
                                 selectedArea === area ? 'bg-gold/10 text-gold' : 'text-white/80 hover:bg-white/5 hover:text-white'
                               }`}
@@ -416,10 +505,13 @@ export default function PropertyExplorer({
                       transition={{ duration: 0.2 }}
                     >
                       <ul className="py-1">
-                        {prices.map((price, idx) => (
+                        {priceOptions.map((price, idx) => (
                           <li key={idx}>
                             <button
-                              onClick={() => { setSelectedPrice(price); setActiveFilter(null); }}
+                              onClick={() => {
+                                updateQuery('budget', price, 'All Prices');
+                                setActiveFilter(null);
+                              }}
                               className={`w-full text-left px-4 py-2 text-xs font-medium tracking-wide transition-colors flex items-center justify-between ${
                                 selectedPrice === price ? 'bg-gold/10 text-gold' : 'text-white/80 hover:bg-white/5 hover:text-white'
                               }`}
@@ -460,13 +552,60 @@ export default function PropertyExplorer({
                         {bedsOptions.map((beds, idx) => (
                           <li key={idx}>
                             <button
-                              onClick={() => { setSelectedBeds(beds); setActiveFilter(null); }}
+                              onClick={() => {
+                                updateQuery('beds', beds, 'All Beds');
+                                setActiveFilter(null);
+                              }}
                               className={`w-full text-left px-4 py-2 text-xs font-medium tracking-wide transition-colors flex items-center justify-between ${
                                 selectedBeds === beds ? 'bg-gold/10 text-gold' : 'text-white/80 hover:bg-white/5 hover:text-white'
                               }`}
                             >
                               <span>{beds}</span>
                               {selectedBeds === beds && <Check className="w-3.5 h-3.5 text-gold" />}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <span className="text-white/10">|</span>
+
+              {/* Property Type Filter */}
+              <div className="relative">
+                <button
+                  onClick={() => toggleFilter('propertyType')}
+                  className="flex items-center space-x-1 px-3 py-1.5 rounded-full hover:bg-white/5 text-xs text-white font-medium transition-colors focus:outline-none cursor-pointer whitespace-nowrap"
+                >
+                  <span className="text-white/40 font-normal mr-1">Type:</span>
+                  <span className="text-gold">{selectedPropertyType}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-white/40" />
+                </button>
+                <AnimatePresence>
+                  {activeFilter === 'propertyType' && (
+                    <motion.div
+                      className="absolute right-0 mt-3 w-56 rounded-sm glass-dropdown shadow-2xl z-50 overflow-hidden"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ul className="py-1 max-h-72 overflow-y-auto">
+                        {propertyTypes.map((propertyType) => (
+                          <li key={propertyType}>
+                            <button
+                              onClick={() => {
+                                updateQuery('propertyType', propertyType, 'All Types');
+                                setActiveFilter(null);
+                              }}
+                              className={`w-full text-left px-4 py-2 text-xs font-medium tracking-wide transition-colors flex items-center justify-between ${
+                                selectedPropertyType === propertyType ? 'bg-gold/10 text-gold' : 'text-white/80 hover:bg-white/5 hover:text-white'
+                              }`}
+                            >
+                              <span>{propertyType}</span>
+                              {selectedPropertyType === propertyType && <Check className="w-3.5 h-3.5 text-gold" />}
                             </button>
                           </li>
                         ))}
