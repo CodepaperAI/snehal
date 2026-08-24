@@ -76,29 +76,34 @@ export default function Hero() {
   return (
     <section className="relative w-full h-screen flex flex-col justify-center items-center overflow-hidden bg-charcoal">
       
-      {/* Portrait is layered over a soft ambient copy so its studio backdrop
-          dissolves naturally into the charcoal hero on every screen size. */}
+      {/* Original Panama hero with the advisor portrait softly composited on top. */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
         <Image
-          src="/images/snehal-hero-portrait.png"
-          alt="Snehal Panchal, Global Realty Panama real estate advisor"
+          src="/images/grp-home-hero.png"
+          alt="Global Realty Panama luxury office with Panama City skyline"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[58%_24%] scale-110 blur-2xl opacity-35"
+          className="object-cover object-center scale-[1.02]"
         />
-        <Image
-          src="/images/snehal-hero-portrait.png"
-          alt=""
-          fill
-          priority
-          sizes="(min-width: 768px) 58vw, 100vw"
-          aria-hidden="true"
-          className="object-cover object-[54%_20%] md:object-contain md:object-right-top opacity-90 [mask-image:linear-gradient(to_bottom,black_0%,black_78%,transparent_100%)] md:[mask-image:linear-gradient(to_right,transparent_0%,black_28%,black_82%,transparent_100%)]"
-        />
-        <div className="absolute inset-0 bg-charcoal-dark/45 md:bg-[linear-gradient(90deg,rgba(5,5,5,0.92)_0%,rgba(5,5,5,0.64)_43%,rgba(5,5,5,0.18)_74%,rgba(5,5,5,0.50)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(212,175,55,0.10)_0%,transparent_38%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal-dark/35 via-transparent to-charcoal-dark" />
+        <div className="absolute inset-0 bg-charcoal-dark/50" />
+
+        <div className="absolute inset-y-0 right-0 w-[88%] sm:w-[66%] lg:w-[50%]">
+          <div className="relative h-full w-full [mask-image:linear-gradient(to_bottom,black_0%,black_84%,transparent_100%)]">
+            <Image
+              src="/images/snehal-hero-cutout.png"
+              alt="Snehal Panchal, Global Realty Panama real estate advisor"
+              fill
+              priority
+              sizes="(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 88vw"
+              className="object-contain object-right-top scale-[0.96] lg:scale-[0.90] origin-top-right lg:translate-y-8 opacity-65 sm:opacity-82 lg:opacity-95 brightness-[1.24] saturate-[1.04] contrast-[1.08] drop-shadow-[0_18px_34px_rgba(0,0,0,0.28)]"
+            />
+          </div>
+        </div>
+
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.82)_0%,rgba(5,5,5,0.50)_46%,rgba(5,5,5,0.08)_76%,rgba(5,5,5,0.18)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_34%,rgba(229,194,77,0.14)_0%,transparent_32%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-charcoal-dark/30 via-transparent to-charcoal-dark/95" />
       </div>
 
       {/* Hero Content Container */}
