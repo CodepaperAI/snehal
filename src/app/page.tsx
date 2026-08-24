@@ -16,8 +16,8 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <ValueProposition />
       <FeaturedProjects projects={featuredProjects} />
+      <ValueProposition />
       <BentoAreaGuide />
       <FounderProfile />
       <BlogSEO />

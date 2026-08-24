@@ -1,202 +1,120 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, Check, X } from 'lucide-react';
+import Image from 'next/image';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowRight, Bath, BedDouble, Check, Maximize2, X } from 'lucide-react';
 import { premiumProjects, type Project } from '../../data/projects';
 
-type FeaturedProjectsProps = {
-  projects?: Project[];
+type FeaturedProject = Project & {
+  area?: string;
+  beds?: number;
+  baths?: number;
+  size?: string;
 };
 
+type FeaturedProjectsProps = { projects?: FeaturedProject[] };
+
 export default function FeaturedProjects({ projects: liveProjects }: FeaturedProjectsProps) {
-  const [activeCtaModal, setActiveCtaModal] = useState<{ project: Project; action: string } | null>(null);
+  const [activeProject, setActiveProject] = useState<FeaturedProject | null>(null);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formError, setFormError] = useState('');
+  const projects = liveProjects?.length ? liveProjects : premiumProjects;
+  const carouselProjects = projects.length > 1 ? [...projects, ...projects] : projects;
 
-  // Display the first 4 premium developments on the home page
-  const projects = (liveProjects && liveProjects.length > 0 ? liveProjects : premiumProjects).slice(0, 4);
-
-  const handleCtaClick = (project: Project, action: string) => {
-    if (action === 'Open Listing' && project.detailUrl) {
-      window.open(project.detailUrl, '_blank', 'noopener,noreferrer');
-      return;
-    }
-
-    setActiveCtaModal({ project, action });
-  };
-
-  const handleLeadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleLeadSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     setFormError('');
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(event.currentTarget);
 
     try {
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          source: 'featured-projects',
+          source: 'new-listings-carousel',
           name: formData.get('name'),
           email: formData.get('email'),
           phone: formData.get('phone'),
-          property: activeCtaModal?.project.title,
-          action: activeCtaModal?.action,
-          message: `Developer: ${activeCtaModal?.project.developer ?? 'Wasi listing'}`,
+          property: activeProject?.title,
+          action: 'Request Private Tour',
+          message: `Developer: ${activeProject?.developer ?? 'Wasi listing'}`,
         }),
       });
 
-      if (!response.ok) {
-        throw new Error('Lead submission failed');
-      }
-
+      if (!response.ok) throw new Error('Lead submission failed');
       setFormSubmitted(true);
-      setTimeout(() => {
-        setActiveCtaModal(null);
+      window.setTimeout(() => {
+        setActiveProject(null);
         setFormSubmitted(false);
       }, 2500);
     } catch (error) {
       console.error(error);
-      setFormError('Unable to submit right now. Please use WhatsApp for fastest response.');
+      setFormError('Unable to submit right now. Please use WhatsApp for the fastest response.');
     }
   };
 
   return (
-    <section id="featured-projects" className="py-24 md:py-32 bg-charcoal-dark border-b border-charcoal-border">
-      <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        
-        {/* Section Header */}
-        <div className="max-w-3xl mb-16 md:mb-24">
-          <motion.span 
-            className="text-gold uppercase tracking-[0.25em] text-xs font-semibold block mb-4"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            Curated Portfolio
-          </motion.span>
-          <motion.h2 
-            className="text-4xl md:text-5xl lg:text-6xl font-serif font-normal text-white leading-tight tracking-wide"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.15 }}
-          >
-            Featured Premium <br />
-            <span className="italic font-light text-white/95">Developments</span>
-          </motion.h2>
+    <section id="new-listings" className="overflow-hidden border-b border-charcoal-border bg-charcoal-dark py-16 md:py-20">
+      <div className="mx-auto mb-9 flex max-w-7xl items-end justify-between gap-6 px-6 lg:px-12">
+        <div>
+          <span className="mb-3 block text-[10px] font-semibold uppercase tracking-[0.28em] text-gold">Fresh from Wasi</span>
+          <h2 className="font-serif text-3xl font-normal tracking-wide text-white md:text-5xl">New Listings</h2>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/55">Explore the latest Panama properties, updated directly from our live inventory.</p>
         </div>
+        <a href="/buy" className="hidden items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-gold transition-colors hover:text-gold-light sm:flex">
+          View all properties <ArrowRight className="h-4 w-4" />
+        </a>
+      </div>
 
-        {/* Staggered Portfolio Card Layout */}
-        <div className="space-y-20 md:space-y-32">
-          {projects.map((project, index) => (
-            <ProjectCard 
-              key={project.id} 
-              project={project} 
-              index={index} 
-              onCtaClick={handleCtaClick}
+      <div className="new-listings-viewport group/carousel" aria-label="New property listings carousel">
+        <div className="new-listings-track flex w-max gap-5 px-6 lg:px-12">
+          {carouselProjects.map((project, index) => (
+            <ListingCard
+              key={`${project.id}-${index}`}
+              project={project}
+              duplicate={index >= projects.length}
+              onTour={() => setActiveProject(project)}
             />
           ))}
         </div>
-
       </div>
 
-      {/* Global Project Lead Capture Modal */}
+      <div className="mt-7 px-6 sm:hidden">
+        <a href="/buy" className="flex items-center justify-center gap-2 border border-gold/40 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-gold">
+          View all properties <ArrowRight className="h-4 w-4" />
+        </a>
+      </div>
+
       <AnimatePresence>
-        {activeCtaModal && (
+        {activeProject && (
           <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
-            <motion.div 
-              className="absolute inset-0 bg-charcoal-dark/80 backdrop-blur-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setActiveCtaModal(null)}
+            <motion.button
+              type="button"
+              aria-label="Close consultation form"
+              className="absolute inset-0 cursor-default bg-charcoal-dark/85 backdrop-blur-sm"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setActiveProject(null)}
             />
-
-            <motion.div 
-              className="relative bg-charcoal border border-white/10 rounded-sm w-full max-w-md overflow-hidden shadow-2xl z-10"
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <button 
-                onClick={() => setActiveCtaModal(null)}
-                className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              <div className="p-6 md:p-8">
+            <motion.div className="relative z-10 w-full max-w-md overflow-hidden border border-white/10 bg-charcoal shadow-2xl" initial={{ opacity: 0, scale: 0.96, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.96, y: 20 }}>
+              <button type="button" aria-label="Close" onClick={() => setActiveProject(null)} className="absolute right-4 top-4 text-white/50 transition-colors hover:text-white"><X className="h-5 w-5" /></button>
+              <div className="p-7 md:p-8">
                 {formSubmitted ? (
-                  <div className="py-12 text-center space-y-4">
-                    <div className="w-12 h-12 bg-gold/10 rounded-full border border-gold flex items-center justify-center mx-auto">
-                      <Check className="w-6 h-6 text-gold" />
-                    </div>
-                    <h3 className="text-xl font-serif text-white">Advisory Request Submitted</h3>
-                    <p className="text-white/50 text-xs leading-relaxed max-w-xs mx-auto">
-                      Your interest in **{activeCtaModal.project.title}** has been registered. Snehal Panchal\'s desk will reach out via WhatsApp/Email shortly.
-                    </p>
+                  <div className="space-y-4 py-12 text-center">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-gold bg-gold/10"><Check className="h-6 w-6 text-gold" /></div>
+                    <h3 className="font-serif text-xl text-white">Tour Request Submitted</h3>
+                    <p className="text-xs leading-relaxed text-white/50">Snehal Panchal&apos;s advisory desk will contact you shortly about {activeProject.title}.</p>
                   </div>
                 ) : (
                   <form onSubmit={handleLeadSubmit} className="space-y-4">
-                    <div>
-                      <span className="text-[9px] tracking-widest uppercase text-gold font-semibold block mb-1">
-                        {activeCtaModal.action}
-                      </span>
-                      <h3 className="text-lg font-serif text-white">{activeCtaModal.project.title}</h3>
-                      <p className="text-white/40 text-[10px] mt-0.5">Developer: {activeCtaModal.project.developer}</p>
-                    </div>
-
-                    <div className="space-y-3 pt-2 text-xs">
-                      <div>
-                        <label className="text-[9px] uppercase tracking-wider text-white/40 block mb-1">Your Full Name</label>
-                        <input 
-                          name="name"
-                          type="text" 
-                          required 
-                          className="w-full px-4 py-2.5 bg-charcoal-light text-white border border-white/5 rounded-sm focus:border-gold focus:outline-none transition-colors"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-[9px] uppercase tracking-wider text-white/40 block mb-1">Email Address</label>
-                        <input 
-                          name="email"
-                          type="email" 
-                          required 
-                          className="w-full px-4 py-2.5 bg-charcoal-light text-white border border-white/5 rounded-sm focus:border-gold focus:outline-none transition-colors"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-[9px] uppercase tracking-wider text-white/40 block mb-1">WhatsApp Number</label>
-                        <input 
-                          name="phone"
-                          type="tel" 
-                          required 
-                          placeholder="+91 / +507 ..."
-                          className="w-full px-4 py-2.5 bg-charcoal-light text-white border border-white/5 rounded-sm focus:border-gold focus:outline-none transition-colors"
-                        />
-                      </div>
-
-                      <div className="pt-1 flex items-center gap-2 text-[10px] text-white/50">
-                        <Check className="w-3.5 h-3.5 text-gold flex-shrink-0" />
-                        <span>Includes private brochure and current price guide.</span>
-                      </div>
-                    </div>
-
-                    {formError && (
-                      <p className="text-xs leading-relaxed text-red-300">{formError}</p>
-                    )}
-
-                    <button 
-                      type="submit" 
-                      className="w-full py-3 bg-gradient-gold text-charcoal font-bold text-xs tracking-widest uppercase hover:bg-gold-light transition-colors rounded-sm cursor-pointer shadow-lg mt-4"
-                    >
-                      Submit Request
-                    </button>
+                    <div><span className="mb-1 block text-[9px] font-semibold uppercase tracking-widest text-gold">Request Private Tour</span><h3 className="font-serif text-xl text-white">{activeProject.title}</h3></div>
+                    {['name', 'email', 'phone'].map((field) => (
+                      <label key={field} className="block text-[9px] uppercase tracking-wider text-white/45">{field === 'phone' ? 'WhatsApp Number' : field === 'name' ? 'Your Full Name' : 'Email Address'}
+                        <input name={field} type={field === 'email' ? 'email' : field === 'phone' ? 'tel' : 'text'} required className="mt-1.5 w-full border border-white/10 bg-charcoal-light px-4 py-3 text-xs normal-case text-white outline-none transition-colors focus:border-gold" />
+                      </label>
+                    ))}
+                    {formError && <p className="text-xs text-red-300">{formError}</p>}
+                    <button type="submit" className="mt-2 w-full bg-gradient-gold py-3 text-[10px] font-bold uppercase tracking-widest text-charcoal">Submit Request</button>
                   </form>
                 )}
               </div>
@@ -204,122 +122,40 @@ export default function FeaturedProjects({ projects: liveProjects }: FeaturedPro
           </div>
         )}
       </AnimatePresence>
+
+      <style jsx global>{`
+        .new-listings-track { animation: new-listings-scroll 52s linear infinite; }
+        .new-listings-viewport:hover .new-listings-track,
+        .new-listings-viewport:focus-within .new-listings-track { animation-play-state: paused; }
+        @keyframes new-listings-scroll { to { transform: translateX(-50%); } }
+        @media (prefers-reduced-motion: reduce) {
+          .new-listings-viewport { overflow-x: auto; scrollbar-width: thin; }
+          .new-listings-track { animation: none; }
+        }
+      `}</style>
     </section>
   );
 }
 
-interface ProjectCardProps {
-  project: Project;
-  index: number;
-  onCtaClick: (project: Project, action: string) => void;
-}
-
-function ProjectCard({ project, index, onCtaClick }: ProjectCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  // Alternate side layout on larger viewports
-  const isImageLeft = index % 2 === 0;
-
+function ListingCard({ project, duplicate, onTour }: { project: FeaturedProject; duplicate: boolean; onTour: () => void }) {
+  const location = project.area || project.location.split(',')[0];
   return (
-    <motion.div 
-      className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center"
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-    >
-      {/* Image Block */}
-      <div 
-        className={`lg:col-span-7 relative ${isImageLeft ? 'lg:order-1' : 'lg:order-2'}`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div className="relative aspect-[16/10] w-full overflow-hidden rounded-sm bg-charcoal border border-white/5 shadow-2xl">
-          {/* Main Background Image */}
-          <motion.img 
-            src={project.image} 
-            alt={project.title}
-            className="w-full h-full object-cover"
-            animate={{ scale: isHovered ? 1.05 : 1 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          />
-
-          {/* Hover Overlay */}
-          <motion.div 
-            className="absolute inset-0 bg-charcoal-dark/75 backdrop-blur-[2px] flex flex-col justify-center items-center gap-4 z-20"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isHovered ? 1 : 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <motion.span 
-              className="text-gold tracking-[0.2em] text-[10px] uppercase font-semibold"
-              animate={{ y: isHovered ? 0 : 10 }}
-              transition={{ duration: 0.3, delay: 0.05 }}
-            >
-              Starting From
-            </motion.span>
-            
-            <motion.h4 
-              className="text-white text-3xl font-serif font-light mb-2"
-              animate={{ y: isHovered ? 0 : 10 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-            >
-              {project.price}
-            </motion.h4>
-            
-            <motion.button 
-              onClick={() => onCtaClick(project, project.cta1)}
-              className="px-6 py-3 bg-gradient-gold hover:bg-gold-light text-charcoal text-[10px] tracking-widest font-semibold uppercase flex items-center gap-2 rounded-sm transition-colors cursor-pointer shadow-lg"
-              animate={{ y: isHovered ? 0 : 15 }}
-              transition={{ duration: 0.3, delay: 0.15 }}
-            >
-              <span>{project.cta1}</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </motion.button>
-          </motion.div>
-
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal-dark/30 to-transparent pointer-events-none z-10" />
-        </div>
+    <article aria-hidden={duplicate || undefined} className="w-[82vw] max-w-[390px] shrink-0 overflow-hidden border border-white/10 bg-charcoal transition-colors hover:border-gold/45 sm:w-[370px]">
+      <div className="relative aspect-[4/3] overflow-hidden bg-charcoal-light">
+        <Image src={project.image} alt={duplicate ? '' : project.title} fill unoptimized sizes="(max-width: 640px) 82vw, 370px" className="object-cover transition-transform duration-700 hover:scale-[1.04]" />
+        <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-charcoal-dark/80 px-4 py-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-white/80 backdrop-blur-sm">{location}</span>
       </div>
-
-      {/* Description Content Block */}
-      <div className={`lg:col-span-5 space-y-5 ${isImageLeft ? 'lg:order-2' : 'lg:order-1'}`}>
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] tracking-widest uppercase font-semibold text-gold">
-            {project.location}
-          </span>
-          <span className="text-[9px] text-white/30 uppercase tracking-widest font-semibold">• {project.developer}</span>
+      <div className="p-6">
+        <p className="font-serif text-2xl text-gold">{project.price}</p>
+        <h3 className="mt-2 min-h-14 font-serif text-xl leading-snug text-white">{project.title}</h3>
+        <div className="mt-5 flex min-h-8 items-center gap-5 border-y border-white/8 py-3 text-[11px] text-white/50">
+          {project.beds ? <span className="flex items-center gap-1.5"><BedDouble className="h-3.5 w-3.5 text-gold" />{project.beds} Beds</span> : null}
+          {project.baths ? <span className="flex items-center gap-1.5"><Bath className="h-3.5 w-3.5 text-gold" />{project.baths} Baths</span> : null}
+          {project.size && project.size !== 'Upon request' ? <span className="flex items-center gap-1.5"><Maximize2 className="h-3.5 w-3.5 text-gold" />{project.size}</span> : null}
+          {!project.beds && !project.baths && (!project.size || project.size === 'Upon request') ? <span>{project.tagline}</span> : null}
         </div>
-        
-        <h3 className="text-2xl md:text-3xl font-serif font-normal text-white">
-          {project.title}
-        </h3>
-        
-        <p className="text-xs tracking-wide uppercase font-medium text-white/50">
-          {project.tagline}
-        </p>
-        
-        <p className="text-sm text-white/75 font-light leading-relaxed pt-2">
-          {project.description}
-        </p>
-        
-        {/* Double Conversion CTAs */}
-        <div className="pt-4 flex flex-wrap items-center gap-3">
-          <button 
-            onClick={() => onCtaClick(project, project.cta1)}
-            className="px-5 py-3 bg-gradient-gold hover:bg-gold-light text-charcoal text-[10px] tracking-widest font-bold uppercase transition-all duration-300 rounded-sm cursor-pointer shadow-md"
-          >
-            {project.cta1}
-          </button>
-          
-          <button 
-            onClick={() => onCtaClick(project, project.cta2)}
-            className="px-5 py-3 bg-charcoal-light/40 hover:bg-charcoal-light/85 text-white border border-white/10 hover:border-gold/30 text-[10px] tracking-widest font-semibold uppercase transition-all duration-300 rounded-sm cursor-pointer shadow-md"
-          >
-            {project.cta2}
-          </button>
-        </div>
+        <button type="button" tabIndex={duplicate ? -1 : 0} onClick={onTour} className="mt-5 flex w-full items-center justify-center gap-2 border border-white/15 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:border-gold hover:text-gold">Request Private Tour <ArrowRight className="h-3.5 w-3.5" /></button>
       </div>
-    </motion.div>
+    </article>
   );
 }

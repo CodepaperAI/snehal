@@ -4,6 +4,7 @@ import { TranslationProvider } from '../context/TranslationContext';
 import Header from '../components/sections/Header';
 import FloatingWhatsApp from '../components/ui/FloatingWhatsApp';
 import AnalyticsScripts from '../components/sections/AnalyticsScripts';
+import ScrollToTop from '../components/ui/ScrollToTop';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://snehal-zeta.vercel.app'),
@@ -64,6 +65,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <ScrollToTop />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -266,10 +266,10 @@ export async function getWasiProjects(params: WasiSearchParams = {}) {
 
 export async function getFeaturedProjects() {
   try {
-    const projects = await getWasiProjects({ take: 4, forSale: true, short: false });
-    return projects.length > 0 ? projects : premiumProjects.slice(0, 4);
+    const projects = await getWasiProjects({ take: 10, forSale: true, short: false });
+    return projects.length > 0 ? projects : premiumProjects;
   } catch (error) {
     console.error(error);
-    return premiumProjects.slice(0, 4);
+    return premiumProjects;
   }
 }
