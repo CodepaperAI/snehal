@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Award, ShieldCheck, Languages, ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 
@@ -70,11 +71,12 @@ export default function FounderProfile() {
             <div className="absolute -inset-4 border border-gold/15 translate-x-3 translate-y-3 rounded-sm z-0 pointer-events-none" />
             
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-sm bg-charcoal border border-white/10 shadow-2xl z-10">
-              <img 
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80" 
-                alt="Snehal Panchal - Founder of Global Realty Panama" 
-                className="w-full h-full object-cover grayscale brightness-95 hover:grayscale-0 hover:brightness-100 transition-all duration-1000 ease-in-out"
-                loading="lazy"
+              <Image
+                src="/images/snehal-hero-portrait.png"
+                alt="Snehal Panchal, founder of Global Realty Panama"
+                fill
+                sizes="(min-width: 1024px) 36vw, 100vw"
+                className="object-cover object-[54%_20%] brightness-[1.04] contrast-[1.03] saturate-[1.02] transition-transform duration-1000 ease-out hover:scale-[1.02]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal-dark/50 to-transparent pointer-events-none z-20" />
             </div>
