@@ -3,6 +3,7 @@ import 'server-only';
 import { premiumProjects, type Project } from '../data/projects';
 
 type WasiImage = {
+  id_gallery?: string | number;
   url?: string;
   url_big?: string;
   url_original?: string;
@@ -30,6 +31,7 @@ type WasiProperty = {
   private_area?: string | number;
   unit_area_label?: string;
   main_image?: WasiImage;
+  galleries?: unknown;
   owner?: string;
 };
 
@@ -58,6 +60,7 @@ export type WasiListingProject = Project & {
   beds: number;
   baths: number;
   size: string;
+  images: string[];
 };
 
 const WASI_BASE_URL = process.env.WASI_BASE_URL ?? 'https://api.wasi.co/v1';
@@ -182,6 +185,28 @@ function getPrice(property: WasiProperty, priceMode: 'sale' | 'rent' = 'sale') {
   );
 }
 
+function getPropertyImages(property: WasiProperty) {
+  const urls = new Set<string>();
+  const addImage = (image: WasiImage | undefined) => {
+    const url = image?.url_big || image?.url_original || image?.url;
+    if (url) urls.add(url);
+  };
+
+  addImage(property.main_image);
+
+  const visit = (value: unknown) => {
+    if (!value || typeof value !== 'object') return;
+    const record = value as Record<string, unknown>;
+    if ('url' in record || 'url_big' in record || 'url_original' in record) {
+      addImage(record as WasiImage);
+    }
+    Object.values(record).forEach(visit);
+  };
+
+  visit(property.galleries);
+  return Array.from(urls);
+}
+
 export function mapWasiPropertyToProject(property: WasiProperty, index = 0, priceMode: 'sale' | 'rent' = 'sale'): WasiListingProject {
   const fallback = premiumProjects[index % premiumProjects.length];
   const id = asNumber(property.id_property) || fallback.id;
@@ -194,6 +219,7 @@ export function mapWasiPropertyToProject(property: WasiProperty, index = 0, pric
   const bedsLabel = beds ? `${beds} bed` : '';
   const bathsLabel = baths ? `${baths} bath` : '';
   const details = [bedsLabel, bathsLabel, area ? size : ''].filter(Boolean).join(' / ');
+  const images = getPropertyImages(property);
 
   return {
     id,
@@ -210,9 +236,7 @@ export function mapWasiPropertyToProject(property: WasiProperty, index = 0, pric
     developer: property.owner === 'allied' ? 'Wasi Allied Listing' : 'Wasi Listing',
     description: cleanText(property.observations, fallback.description),
     image:
-      property.main_image?.url_big ||
-      property.main_image?.url ||
-      property.main_image?.url_original ||
+      images[0] ||
       fallback.image,
     cta1: 'Schedule Viewing',
     cta2: 'Open Listing',
@@ -222,7 +246,40 @@ export function mapWasiPropertyToProject(property: WasiProperty, index = 0, pric
     beds,
     baths,
     size,
+    images: images.length > 0 ? images : [fallback.image],
   };
+}
+
+export async function getWasiProjectById(id: number) {
+  try {
+    const { idCompany, token } = getCredentials();
+    const body = new URLSearchParams({ id_company: idCompany, wasi_token: token });
+    const response = await fetch(`${WASI_BASE_URL}/property/get/${id}`, {
+      method: 'POST',
+      body,
+      cache: 'no-store',
+    });
+
+    if (!response.ok) throw new Error(`Wasi property request failed with ${response.status}`);
+    const property = (await response.json()) as WasiProperty & { status?: string; message?: string };
+    if (property.status && property.status !== 'success') {
+      throw new Error(property.message || 'Wasi API returned an error');
+    }
+    return mapWasiPropertyToProject(property, 0, asNumber(property.sale_price) > 0 ? 'sale' : 'rent');
+  } catch (error) {
+    console.error(error);
+    const fallback = premiumProjects.find((project) => project.id === id);
+    if (!fallback) return null;
+    return {
+      ...fallback,
+      area: fallback.location.split(',')[0],
+      propertyType: fallback.tagline,
+      beds: 0,
+      baths: 0,
+      size: 'Upon request',
+      images: [fallback.image],
+    } satisfies WasiListingProject;
+  }
 }
 
 export async function getWasiProjects(params: WasiSearchParams = {}) {

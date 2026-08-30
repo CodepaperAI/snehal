@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, Moon, Sun } from 'lucide-react';
 import { useTranslation, type Language } from '../../context/TranslationContext';
+import { useTheme } from '../../context/ThemeContext';
 
 interface DropdownItem {
   labelKey: string;
@@ -24,6 +26,7 @@ export default function Header() {
   
   // Language switcher dropdown state
   const { language, setLanguage, t } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
   const [langOpen, setLangOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -100,7 +103,7 @@ export default function Header() {
       />
 
       <motion.header
-        className={`fixed top-0 left-0 w-full z-45 transition-all duration-500 ${
+        className={`site-header fixed top-0 left-0 w-full z-45 transition-all duration-500 ${
           isScrolled 
             ? 'py-4 bg-charcoal-dark/95 backdrop-blur-md border-b border-charcoal-border shadow-lg' 
             : 'py-6 bg-transparent border-b border-white/5'
@@ -112,13 +115,19 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
           
           {/* Logo */}
-          <Link href="/" className="flex flex-col group cursor-pointer select-none">
-            <span className="font-serif text-lg md:text-xl tracking-[0.2em] font-medium text-white group-hover:text-gold transition-colors duration-300">
-              GLOBAL REALTY
-            </span>
-            <span className="text-[9px] tracking-[0.45em] text-gold uppercase -mt-0.5">
-              Panama
-            </span>
+          <Link
+            href="/"
+            aria-label="Global Realty Panama home"
+            className="relative h-[70px] w-[70px] shrink-0 overflow-hidden rounded-sm bg-white shadow-lg ring-1 ring-gold/25 transition-transform duration-300 hover:scale-[1.03] md:h-[76px] md:w-[76px]"
+          >
+            <Image
+              src="/images/brand/global-realty-panama-official.png"
+              alt="Global Realty Panama"
+              fill
+              priority
+              sizes="76px"
+              className="object-contain"
+            />
           </Link>
 
           {/* Desktop Navigation Links */}
@@ -239,6 +248,15 @@ export default function Header() {
 
           {/* Right Section CTAs & Language Toggler */}
           <div className="hidden xl:flex items-center space-x-6">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? t('lightTheme') : t('darkTheme')}
+              title={theme === 'dark' ? t('lightTheme') : t('darkTheme')}
+              className="flex h-9 w-9 items-center justify-center rounded-sm border border-white/10 text-white/80 transition-colors hover:border-gold/40 hover:text-gold"
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
             
             {/* Language Selector Dropdown */}
             <div ref={langDropdownRef} className="relative">
@@ -379,6 +397,14 @@ export default function Header() {
 
             {/* Mobile Footer Area inside Drawer */}
             <div className="mt-12 space-y-4">
+              <button
+                type="button"
+                onClick={toggleTheme}
+                className="flex w-full items-center justify-center gap-2 rounded-sm border border-white/10 py-3 text-xs font-semibold uppercase tracking-widest text-white/75 transition-colors hover:border-gold/40 hover:text-gold"
+              >
+                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {theme === 'dark' ? t('lightTheme') : t('darkTheme')}
+              </button>
               {/* Mobile Language Switcher */}
               <div className="flex justify-center space-x-4 border-b border-white/5 pb-4">
                 {langOptions.map(opt => (

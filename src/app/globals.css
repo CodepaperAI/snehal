@@ -79,3 +79,72 @@
   transform: translateY(-2px);
   box-shadow: 0 10px 25px -5px rgba(212, 175, 55, 0.15);
 }
+
+/* Light theme: warm editorial surfaces with navy typography and gold accents. */
+html[data-theme='light'] body,
+html[data-theme='light'] .site-shell {
+  background: #f6f2e9 !important;
+  color: #102033 !important;
+}
+
+html[data-theme='light'] [class*='bg-charcoal'] {
+  background-color: #f6f2e9 !important;
+}
+
+html[data-theme='light'] [class*='text-white'] {
+  color: rgba(16, 32, 51, 0.82) !important;
+}
+
+html[data-theme='light'] [class*='border-white'],
+html[data-theme='light'] [class*='border-charcoal'] {
+  border-color: rgba(16, 32, 51, 0.12) !important;
+}
+
+html[data-theme='light'] [class*='bg-white'] {
+  background-color: rgba(255, 255, 255, 0.72) !important;
+}
+
+html[data-theme='light'] .site-header {
+  background: rgba(250, 247, 240, 0.94) !important;
+  border-color: rgba(16, 32, 51, 0.1) !important;
+  box-shadow: 0 12px 34px rgba(16, 32, 51, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+html[data-theme='light'] .glass-panel {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(16, 32, 51, 0.12);
+  box-shadow: 0 20px 50px rgba(16, 32, 51, 0.12);
+}
+
+html[data-theme='light'] .glass-dropdown {
+  background: rgba(255, 253, 248, 0.98);
+  border-color: rgba(16, 32, 51, 0.12);
+}
+
+html[data-theme='light'] .theme-hero,
+html[data-theme='light'] .theme-hero [class*='bg-charcoal'] {
+  background-color: #0d0d0d !important;
+}
+
+html[data-theme='light'] .theme-hero [class*='text-white'] {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html[data-theme='light'] .theme-hero .glass-panel {
+  background: rgba(13, 13, 13, 0.68);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme='light'] .theme-hero .glass-panel [class*='text-white'] {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html[data-theme='light'] ::-webkit-scrollbar-track {
+  background: #eee8dc;
+}
+
+html[data-theme='light'] ::-webkit-scrollbar-thumb {
+  background: #c9bfac;
+  border-color: rgba(16, 32, 51, 0.08);
+}

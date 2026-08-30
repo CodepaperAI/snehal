@@ -125,8 +125,8 @@ export default function PropertyMatch() {
                 </button>
                 <div className="flex flex-col gap-3 border-t border-white/8 pt-5 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
                   <span>Planning an investment purchase?</span>
-                  <Link href="/invest" className="inline-flex items-center gap-2 font-semibold uppercase tracking-wider text-gold hover:text-gold-light">
-                    <Calculator className="h-3.5 w-3.5" /> Open ROI calculator
+                  <Link href="/invest#calculators" className="inline-flex items-center gap-2 font-semibold uppercase tracking-wider text-gold hover:text-gold-light">
+                    <Calculator className="h-3.5 w-3.5" /> Open investor calculators
                   </Link>
                 </div>
               </form>

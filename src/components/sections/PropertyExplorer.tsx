@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Map, Grid, BedDouble, Bath, Square, ChevronDown, Check, ArrowRight, X } from 'lucide-react';
 import Footer from './Footer';
@@ -750,16 +751,9 @@ export default function PropertyExplorer({
                     <span>Request Private Tour</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
-                  {prop.detailUrl && (
-                    <a
-                      href={prop.detailUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="block text-center text-[10px] font-semibold uppercase tracking-widest text-white/45 transition-colors hover:text-gold"
-                    >
-                      View Wasi Listing
-                    </a>
-                  )}
+                  <Link href={`/properties/${prop.id}`} className="block text-center text-[10px] font-semibold uppercase tracking-widest text-white/45 transition-colors hover:text-gold">
+                    View Property Details
+                  </Link>
                 </div>
               </motion.div>
             ))}
@@ -827,16 +821,9 @@ export default function PropertyExplorer({
                         {activePropertyModal.description}
                       </p>
                     )}
-                    {activePropertyModal.detailUrl && (
-                      <a
-                        href={activePropertyModal.detailUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex text-[10px] font-semibold uppercase tracking-widest text-gold hover:text-gold-light"
-                      >
-                        Open original Wasi listing
-                      </a>
-                    )}
+                    <Link href={`/properties/${activePropertyModal.id}`} className="inline-flex text-[10px] font-semibold uppercase tracking-widest text-gold hover:text-gold-light">
+                      View full property details
+                    </Link>
 
                     <div className="space-y-3 pt-2">
                       <div>

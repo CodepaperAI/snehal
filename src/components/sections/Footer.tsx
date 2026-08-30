@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
   const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -44,14 +45,19 @@ export default function Footer() {
         
         {/* Brand Column */}
         <div className="lg:col-span-4 space-y-6">
-          <a href="#" className="flex flex-col group w-max">
-            <span className="font-serif text-lg md:text-xl tracking-[0.2em] font-medium text-white group-hover:text-gold transition-colors duration-300">
-              GLOBAL REALTY
-            </span>
-            <span className="text-[9px] tracking-[0.45em] text-gold uppercase -mt-0.5">
-              Panama
-            </span>
-          </a>
+          <Link
+            href="/"
+            aria-label="Global Realty Panama home"
+            className="relative block h-36 w-36 overflow-hidden rounded-sm bg-white shadow-xl ring-1 ring-gold/20 transition-transform duration-300 hover:scale-[1.02]"
+          >
+            <Image
+              src="/images/brand/global-realty-panama-official.png"
+              alt="Global Realty Panama"
+              fill
+              sizes="144px"
+              className="object-contain"
+            />
+          </Link>
           <p className="text-sm font-light leading-relaxed max-w-sm text-white/50">
             Trusted Real Estate & Investment Advisory curating high-yield assets, oceanfront penthouses, and permanent residency programs for global wealth.
           </p>

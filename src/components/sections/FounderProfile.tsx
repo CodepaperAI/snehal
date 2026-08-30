@@ -93,6 +93,16 @@ export default function FounderProfile() {
             <span className="text-gold uppercase tracking-[0.25em] text-xs font-semibold block">
               Founder Profile & Advisory
             </span>
+
+            <div className="relative h-40 w-40 overflow-hidden rounded-sm bg-white shadow-xl ring-1 ring-gold/25 sm:h-44 sm:w-44">
+              <Image
+                src="/images/brand/snehal-panchal-personal-brand.png"
+                alt="Snehal Panchal Real Estate personal brand"
+                fill
+                sizes="176px"
+                className="object-contain"
+              />
+            </div>
             
             <h2 className="text-4xl md:text-5xl font-serif font-normal text-white tracking-wide">
               Snehal Panchal <br />

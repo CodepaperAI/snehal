@@ -6,6 +6,7 @@ import Header from '../components/sections/Header';
 import FloatingWhatsApp from '../components/ui/FloatingWhatsApp';
 import AnalyticsScripts from '../components/sections/AnalyticsScripts';
 import ScrollToTop from '../components/ui/ScrollToTop';
+import { ThemeProvider } from '../context/ThemeContext';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -76,16 +77,22 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="en" data-theme="dark" suppressHydrationWarning className={`${inter.variable} ${playfair.variable}`}>
       <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('site-theme');document.documentElement.dataset.theme=t==='light'?'light':'dark';document.documentElement.style.colorScheme=t==='light'?'light':'dark'}catch(e){}})()`,
+          }}
+        />
         <ScrollToTop />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <AnalyticsScripts />
-        <TranslationProvider>
-          <div className="relative min-h-screen bg-charcoal text-white font-sans selection:bg-gold selection:text-charcoal">
+        <ThemeProvider>
+          <TranslationProvider>
+          <div className="site-shell relative min-h-screen bg-charcoal text-white font-sans selection:bg-gold selection:text-charcoal">
             {/* Global Navigation Header */}
             <Header />
             
@@ -96,7 +103,8 @@ export default function RootLayout({
             {/* Persistent Lead Conversion WhatsApp Button */}
             <FloatingWhatsApp />
           </div>
-        </TranslationProvider>
+          </TranslationProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

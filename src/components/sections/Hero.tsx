@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ChevronDown, MapPin, DollarSign, Home } from 'lucide-react';
+import { useTranslation } from '../../context/TranslationContext';
 
 export default function Hero() {
   const router = useRouter();
+  const { t } = useTranslation();
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '50760000000';
 
   // Search dropdown states
@@ -36,6 +38,18 @@ export default function Hero() {
     ? ['Any Budget', 'Under $2K', '$2K - $4K', '$4K - $7.5K', '$7.5K+']
     : ['Any Budget', '$300K - $500K', '$500K - $1M', '$1M - $3M', '$3M - $5M', '$5M+'];
   const types = ['Property Type', 'Buy', 'Rent', 'New Projects', 'Penthouse', 'Oceanfront Villa', 'Luxury Condo', 'Private Estate'];
+  const translatedValue = (value: string) => ({
+    'All Areas': t('allAreas'),
+    'Any Budget': t('anyBudget'),
+    'Property Type': t('propertyType'),
+    Buy: t('buy'),
+    Rent: t('rent'),
+    'New Projects': t('newProjects'),
+    Penthouse: t('penthouse'),
+    'Oceanfront Villa': t('oceanfrontVilla'),
+    'Luxury Condo': t('luxuryCondo'),
+    'Private Estate': t('privateEstate'),
+  }[value] || value);
 
   const handleDropdownToggle = (type: 'area' | 'budget' | 'type') => {
     if (activeSearchDropdown === type) {
@@ -74,7 +88,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative flex min-h-[820px] w-full flex-col items-center justify-center overflow-hidden bg-charcoal py-28 sm:min-h-[780px] lg:min-h-screen lg:py-24">
+    <section className="theme-hero relative flex min-h-[820px] w-full flex-col items-center justify-center overflow-hidden bg-charcoal py-28 sm:min-h-[780px] lg:min-h-screen lg:py-24">
       
       {/* Panama skyline hero supplied for the main landing experience. */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
@@ -86,9 +100,6 @@ export default function Hero() {
           sizes="100vw"
           className="object-cover object-[58%_center] sm:object-center"
         />
-        <div className="absolute inset-0 bg-charcoal-dark/45" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(5,5,5,0.18)_0%,rgba(5,5,5,0.58)_76%,rgba(5,5,5,0.78)_100%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal-dark/55 via-charcoal-dark/15 to-charcoal-dark/95" />
       </div>
 
       {/* Hero Content Container */}
@@ -100,7 +111,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.15 }}
         >
-          GLOBAL REALTY PANAMA • LUXURY PORTFOLIO
+          {t('heroEyebrow')}
         </motion.span>
 
         {/* Headline */}
@@ -110,8 +121,8 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
         >
-          Live, Invest & Grow <br className="hidden sm:inline" />
-          <span className="italic font-light text-white/95">in Panama</span>
+          {t('heroTitleLead')} <br className="hidden sm:inline" />
+          <span className="italic font-light text-white/95">{t('heroTitleAccent')}</span>
         </motion.h1>
 
         {/* Subheadline */}
@@ -121,7 +132,7 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.45 }}
         >
-          Trusted Real Estate & Investment Advisory for Families, Expats & Global Investors looking for high-yield assets and residency in Latin America's primary financial hub.
+          {t('heroSubtitle')}
         </motion.p>
 
         {/* CTA Buttons */}
@@ -135,7 +146,7 @@ export default function Hero() {
             href="#featured-projects"
             className="w-full sm:w-auto px-8 py-4 bg-gradient-gold text-charcoal hover:bg-gold-light text-xs font-semibold tracking-widest uppercase transition-all duration-300 rounded-sm shadow-xl flex items-center justify-center gap-2 hover:scale-[1.02] cursor-pointer"
           >
-            Browse Properties
+            {t('browse')}
           </a>
           <a
             href={`https://wa.me/${whatsappNumber}`}
@@ -146,7 +157,7 @@ export default function Hero() {
             <svg viewBox="0 0 24 24" className="w-4 h-4 fill-white hover:fill-gold transition-colors duration-300" xmlns="http://www.w3.org/2000/svg">
               <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.965C16.528 2.01 14.069.99 11.999.99c-5.437 0-9.862 4.37-9.866 9.8.001 2.019.538 3.992 1.554 5.75L2.68 20.2l4.008-.95c.002 0-.041.004-.041.004zM18.06 14.9c-.33-.165-1.953-.964-2.253-1.074-.3-.109-.518-.165-.736.165-.218.33-.846 1.074-1.037 1.293-.19.218-.38.245-.71.08-.33-.165-1.393-.513-2.653-1.637-.984-.877-1.648-1.96-1.84-2.29-.19-.33-.02-.508.145-.671.147-.146.33-.385.495-.578.165-.19.22-.33.33-.55.11-.22.055-.413-.028-.578-.083-.165-.736-1.775-1.008-2.434-.265-.636-.53-.55-.736-.56-.19-.01-.408-.012-.625-.012-.218 0-.573.082-.873.407-.3.33-1.145 1.116-1.145 2.72 0 1.605 1.172 3.159 1.334 3.38.163.22 2.307 3.524 5.59 4.943.78.337 1.39.538 1.86.687.784.249 1.497.214 2.062.13.629-.094 1.953-.798 2.227-1.57.275-.77.275-1.43.193-1.57-.083-.14-.3-.22-.63-.385z"/>
             </svg>
-            WhatsApp Us
+            {t('whatsapp')}
           </a>
         </motion.div>
 
@@ -161,7 +172,7 @@ export default function Hero() {
           {/* Dropdown 1: Area */}
           <div className="w-full md:w-1/3 relative border-b md:border-b-0 md:border-r border-white/10 pb-4 md:pb-0 md:pr-4">
             <span className="text-[10px] uppercase tracking-widest text-white/50 block mb-1">
-              Select Area
+              {t('selectArea')}
             </span>
             <button 
               onClick={() => handleDropdownToggle('area')}
@@ -169,7 +180,7 @@ export default function Hero() {
             >
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-gold" />
-                <span className="text-sm truncate">{selectedArea}</span>
+                <span className="text-sm truncate">{translatedValue(selectedArea)}</span>
               </div>
               <ChevronDown className={`w-4 h-4 text-white/50 transition-transform duration-300 ${activeSearchDropdown === 'area' ? 'rotate-180 text-gold' : ''}`} />
             </button>
@@ -192,7 +203,7 @@ export default function Hero() {
                             selectedArea === area ? 'bg-gold/10 text-gold' : 'text-white/80 hover:bg-white/5 hover:text-white'
                           }`}
                         >
-                          {area}
+                          {translatedValue(area)}
                         </button>
                       </li>
                     ))}
@@ -205,7 +216,7 @@ export default function Hero() {
           {/* Dropdown 2: Budget */}
           <div className="w-full md:w-1/3 relative border-b md:border-b-0 md:border-r border-white/10 pb-4 md:pb-0 md:px-4">
             <span className="text-[10px] uppercase tracking-widest text-white/50 block mb-1">
-              Budget Range
+              {t('budgetRange')}
             </span>
             <button 
               onClick={() => handleDropdownToggle('budget')}
@@ -213,7 +224,7 @@ export default function Hero() {
             >
               <div className="flex items-center gap-2">
                 <DollarSign className="w-4 h-4 text-gold" />
-                <span className="text-sm truncate">{selectedBudget}</span>
+                <span className="text-sm truncate">{translatedValue(selectedBudget)}</span>
               </div>
               <ChevronDown className={`w-4 h-4 text-white/50 transition-transform duration-300 ${activeSearchDropdown === 'budget' ? 'rotate-180 text-gold' : ''}`} />
             </button>
@@ -236,7 +247,7 @@ export default function Hero() {
                             selectedBudget === budget ? 'bg-gold/10 text-gold' : 'text-white/80 hover:bg-white/5 hover:text-white'
                           }`}
                         >
-                          {budget}
+                          {translatedValue(budget)}
                         </button>
                       </li>
                     ))}
@@ -249,7 +260,7 @@ export default function Hero() {
           {/* Dropdown 3: Property Type */}
           <div className="w-full md:w-1/3 relative pb-2 md:pb-0 md:pl-4">
             <span className="text-[10px] uppercase tracking-widest text-white/50 block mb-1">
-              Property Type
+              {t('propertyType')}
             </span>
             <button 
               onClick={() => handleDropdownToggle('type')}
@@ -257,7 +268,7 @@ export default function Hero() {
             >
               <div className="flex items-center gap-2">
                 <Home className="w-4 h-4 text-gold" />
-                <span className="text-sm truncate">{selectedType}</span>
+                <span className="text-sm truncate">{translatedValue(selectedType)}</span>
               </div>
               <ChevronDown className={`w-4 h-4 text-white/50 transition-transform duration-300 ${activeSearchDropdown === 'type' ? 'rotate-180 text-gold' : ''}`} />
             </button>
@@ -280,7 +291,7 @@ export default function Hero() {
                             selectedType === type ? 'bg-gold/10 text-gold' : 'text-white/80 hover:bg-white/5 hover:text-white'
                           }`}
                         >
-                          {type}
+                          {translatedValue(type)}
                         </button>
                       </li>
                     ))}
@@ -296,7 +307,7 @@ export default function Hero() {
             className="w-full md:w-auto px-6 py-4 bg-gradient-gold hover:bg-gold-light text-charcoal font-semibold text-xs tracking-widest uppercase flex items-center justify-center gap-2 rounded-sm shadow-lg transition-all duration-300 hover:scale-[1.03] cursor-pointer whitespace-nowrap self-stretch md:self-auto"
           >
             <Search className="w-4 h-4" />
-            <span>Search</span>
+            <span>{t('search')}</span>
           </button>
         </motion.div>
       </div>
