@@ -74,40 +74,25 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative w-full h-screen flex flex-col justify-center items-center overflow-hidden bg-charcoal">
+    <section className="relative flex min-h-[820px] w-full flex-col items-center justify-center overflow-hidden bg-charcoal py-28 sm:min-h-[780px] lg:min-h-screen lg:py-24">
       
-      {/* Original Panama hero with the advisor portrait softly composited on top. */}
+      {/* Panama skyline hero supplied for the main landing experience. */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
         <Image
-          src="/images/grp-home-hero.png"
-          alt="Global Realty Panama luxury office with Panama City skyline"
+          src="/images/hero-panama-skyline.webp"
+          alt="Panama City skyline and historic waterfront at sunset"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center scale-[1.02]"
+          className="object-cover object-[58%_center] sm:object-center"
         />
-        <div className="absolute inset-0 bg-charcoal-dark/50" />
-
-        <div className="absolute inset-y-0 right-0 w-[88%] sm:w-[66%] lg:w-[50%]">
-          <div className="relative h-full w-full [mask-image:linear-gradient(to_bottom,black_0%,black_84%,transparent_100%)]">
-            <Image
-              src="/images/snehal-hero-cutout.png"
-              alt="Snehal Panchal, Global Realty Panama real estate advisor"
-              fill
-              priority
-              sizes="(min-width: 1024px) 50vw, (min-width: 640px) 66vw, 88vw"
-              className="object-contain object-right-top scale-[0.96] lg:scale-[0.90] origin-top-right lg:translate-y-8 opacity-65 sm:opacity-82 lg:opacity-95 brightness-[1.24] saturate-[1.04] contrast-[1.08] drop-shadow-[0_18px_34px_rgba(0,0,0,0.28)]"
-            />
-          </div>
-        </div>
-
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,5,5,0.82)_0%,rgba(5,5,5,0.50)_46%,rgba(5,5,5,0.08)_76%,rgba(5,5,5,0.18)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_34%,rgba(229,194,77,0.14)_0%,transparent_32%)]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal-dark/30 via-transparent to-charcoal-dark/95" />
+        <div className="absolute inset-0 bg-charcoal-dark/45" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(5,5,5,0.18)_0%,rgba(5,5,5,0.58)_76%,rgba(5,5,5,0.78)_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-charcoal-dark/55 via-charcoal-dark/15 to-charcoal-dark/95" />
       </div>
 
       {/* Hero Content Container */}
-      <div className="relative z-20 max-w-5xl mx-auto px-6 text-center mt-16 flex flex-col items-center">
+      <div className="relative z-20 mx-auto mt-12 flex w-full max-w-5xl flex-col items-center px-6 text-center sm:mt-16">
         {/* Animated Subtitle */}
         <motion.span 
           className="text-gold uppercase tracking-[0.3em] text-[10px] sm:text-xs font-semibold mb-4 block"
@@ -120,7 +105,7 @@ export default function Hero() {
 
         {/* Headline */}
         <motion.h1 
-          className="text-4xl sm:text-5xl md:text-7xl font-serif text-white font-normal leading-[1.15] mb-6 tracking-wide"
+          className="mb-6 max-w-4xl font-serif text-[2.7rem] font-normal leading-[1.08] tracking-[0.015em] text-white drop-shadow-[0_3px_18px_rgba(0,0,0,0.7)] sm:text-5xl md:text-7xl"
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
@@ -131,7 +116,7 @@ export default function Hero() {
 
         {/* Subheadline */}
         <motion.p 
-          className="text-sm sm:text-base md:text-lg text-white/75 font-sans font-light tracking-wide max-w-2xl mb-8 leading-relaxed"
+          className="mb-8 max-w-2xl font-sans text-sm font-light leading-relaxed tracking-wide text-white/85 drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)] sm:text-base md:text-lg"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.45 }}

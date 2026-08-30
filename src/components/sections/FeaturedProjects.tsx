@@ -55,19 +55,21 @@ export default function FeaturedProjects({ projects: liveProjects }: FeaturedPro
   };
 
   return (
-    <section id="new-listings" className="overflow-hidden border-b border-charcoal-border bg-charcoal-dark py-16 md:py-20">
+    <section id="featured-projects" className="overflow-hidden border-b border-charcoal-border bg-charcoal-dark py-16 md:py-20">
       <div className="mx-auto mb-9 flex max-w-7xl items-end justify-between gap-6 px-6 lg:px-12">
         <div>
-          <span className="mb-3 block text-[10px] font-semibold uppercase tracking-[0.28em] text-gold">Fresh from Wasi</span>
-          <h2 className="font-serif text-3xl font-normal tracking-wide text-white md:text-5xl">New Listings</h2>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/55">Explore the latest Panama properties, updated directly from our live inventory.</p>
+          <span className="mb-3 block text-[10px] font-semibold uppercase tracking-[0.28em] text-gold">Curated Portfolio</span>
+          <h2 className="font-serif text-3xl font-normal tracking-wide text-white md:text-5xl">
+            Featured Premium <span className="italic font-light text-white/95">Developments</span>
+          </h2>
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/55">Explore 10 of the newest Panama properties, updated directly from our live Wasi inventory.</p>
         </div>
         <a href="/buy" className="hidden items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-gold transition-colors hover:text-gold-light sm:flex">
           View all properties <ArrowRight className="h-4 w-4" />
         </a>
       </div>
 
-      <div className="new-listings-viewport group/carousel" aria-label="New property listings carousel">
+      <div className="new-listings-viewport group/carousel" aria-label="Featured premium developments carousel">
         <div className="new-listings-track flex w-max gap-5 px-6 lg:px-12">
           {carouselProjects.map((project, index) => (
             <ListingCard

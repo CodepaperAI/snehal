@@ -3,6 +3,7 @@ import ValueProposition from '../components/sections/ValueProposition';
 import FeaturedProjects from '../components/sections/FeaturedProjects';
 import BentoAreaGuide from '../components/sections/BentoAreaGuide';
 import FounderProfile from '../components/sections/FounderProfile';
+import PropertyMatch from '../components/sections/PropertyMatch';
 import BlogSEO from '../components/sections/BlogSEO';
 import Footer from '../components/sections/Footer';
 import { getFeaturedProjects } from '../lib/wasi';
@@ -19,6 +20,7 @@ export default async function Home() {
       <FeaturedProjects projects={featuredProjects} />
       <ValueProposition />
       <BentoAreaGuide />
+      <PropertyMatch />
       <FounderProfile />
       <BlogSEO />
       <Footer />
