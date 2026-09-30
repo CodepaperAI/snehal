@@ -90,15 +90,15 @@ export default function Hero() {
   return (
     <section className="theme-hero relative flex min-h-[820px] w-full flex-col items-center justify-center overflow-hidden bg-charcoal py-28 sm:min-h-[780px] lg:min-h-screen lg:py-24">
       
-      {/* Panama skyline hero supplied for the main landing experience. */}
+      {/* Free-to-use Panama City sunset photograph by Sol Cerrud / Unsplash. */}
       <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
         <Image
-          src="/images/hero-panama-skyline.webp"
-          alt="Panama City skyline and historic waterfront at sunset"
+          src="/images/hero-panama-sunset.jpg"
+          alt="Panama City skyline and waterfront glowing at sunset"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[58%_center] sm:object-center"
+          className="object-cover object-[72%_center] sm:object-[66%_center] lg:object-center"
         />
       </div>
 
