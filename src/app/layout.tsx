@@ -63,10 +63,18 @@ export default function RootLayout({
     name: 'Global Realty Panama',
     url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://snehal-zeta.vercel.app',
     areaServed: 'Panama',
+    telephone: '+507 297-4765',
     address: {
       '@type': 'PostalAddress',
-      addressLocality: 'Panama City',
+      streetAddress: 'Office 3536, 35th Floor, Tower Financial Center, Calle 50',
+      addressLocality: 'Bella Vista, District of Panama',
+      addressRegion: 'Panama Province',
       addressCountry: 'PA',
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      telephone: '+507 6708-2030',
+      contactType: 'customer service',
     },
     serviceType: [
       'Luxury real estate advisory',

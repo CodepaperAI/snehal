@@ -430,7 +430,7 @@ export default function Header() {
                 {t('cta')}
               </Link>
               <div className="flex justify-center space-x-6 text-white/40 text-xs pt-4">
-                <span>Panama City, Panama</span>
+                <span>Bella Vista, Panama</span>
                 <span>•</span>
                 <span>English, Español, Português & हिन्दी</span>
               </div>

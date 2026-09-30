@@ -6,7 +6,7 @@ import FounderProfile from '../../components/sections/FounderProfile';
 import Footer from '../../components/sections/Footer';
 
 export default function About() {
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '50760000000';
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '50767082030';
   const values = [
     {
       icon: <ShieldCheck className="w-8 h-8 text-gold" />,

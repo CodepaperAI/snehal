@@ -10,7 +10,7 @@ import { useTranslation } from '../../context/TranslationContext';
 export default function Hero() {
   const router = useRouter();
   const { t } = useTranslation();
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '50760000000';
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '50767082030';
 
   // Search dropdown states
   const [activeSearchDropdown, setActiveSearchDropdown] = useState<'area' | 'budget' | 'type' | null>(null);

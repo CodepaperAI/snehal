@@ -62,13 +62,20 @@ export default function Footer() {
             Trusted Real Estate & Investment Advisory curating high-yield assets, oceanfront penthouses, and permanent residency programs for global wealth.
           </p>
           <div className="space-y-3.5 pt-2 text-sm font-light">
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-3">
               <MapPin className="w-4 h-4 text-gold flex-shrink-0" />
-              <span>Santa Maria Office, Tower 200, Panama City</span>
+              <span>
+                Office 3536, 35th Floor, Tower Financial Center, Calle 50,<br />
+                Bella Vista, District of Panama, Panama Province
+              </span>
             </div>
             <div className="flex items-center gap-3">
               <Phone className="w-4 h-4 text-gold flex-shrink-0" />
-              <span>+507 6000 0000</span>
+              <span>Telephone: +507 297-4765</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Phone className="w-4 h-4 text-gold flex-shrink-0" />
+              <span>Mobile: +507 6708-2030</span>
             </div>
             <div className="flex items-center gap-3">
               <Mail className="w-4 h-4 text-gold flex-shrink-0" />
