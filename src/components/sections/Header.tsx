@@ -297,7 +297,7 @@ export default function Header() {
             </div>
 
             <Link 
-              href="/about"
+              href="/book-consultation"
               className="px-6 py-2.5 text-xs font-semibold tracking-widest uppercase border border-gold/45 text-gold hover:text-charcoal hover:bg-gold transition-all duration-300 rounded-sm cursor-pointer magnetic-btn relative overflow-hidden"
             >
               {t('cta')}
@@ -423,7 +423,7 @@ export default function Header() {
               </div>
 
               <Link 
-                href="/about"
+                href="/book-consultation"
                 onClick={() => setMobileMenuOpen(false)}
                 className="block w-full py-3.5 text-center text-xs font-semibold tracking-widest uppercase bg-gradient-gold text-charcoal hover:bg-gold-light transition-colors rounded-sm cursor-pointer"
               >

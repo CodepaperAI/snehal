@@ -21,7 +21,7 @@ type KonectaleUpsertResponse = {
 };
 
 const KONECTALE_API_URL = 'https://services.leadconnectorhq.com';
-const KONECTALE_LOCATION_ID = 'PgCqmWFD3ICN2PbEFxGQ';
+const KONECTALE_LOCATION_ID = 'jWNqVJpPfJGX5D6yDQ4K';
 
 function clean(value: unknown) {
   return typeof value === 'string' ? value.trim().slice(0, 500) : '';
