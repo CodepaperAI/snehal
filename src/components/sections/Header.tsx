@@ -112,7 +112,7 @@ export default function Header() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between">
+        <div className="mx-auto flex max-w-[1440px] items-center justify-between px-6 lg:px-12 xl:grid xl:grid-cols-[auto_minmax(0,1fr)_auto] xl:gap-x-10 2xl:gap-x-14">
           
           {/* Logo */}
           <Link
@@ -131,7 +131,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center space-x-8">
+          <nav className="hidden min-w-0 items-center justify-center gap-6 xl:flex 2xl:gap-8">
             <Link href="/" className="text-sm tracking-widest uppercase text-white/90 hover:text-gold transition-colors duration-300">
               {t('home')}
             </Link>
@@ -247,7 +247,7 @@ export default function Header() {
           </nav>
 
           {/* Right Section CTAs & Language Toggler */}
-          <div className="hidden xl:flex items-center space-x-6">
+          <div className="hidden items-center gap-4 xl:flex 2xl:gap-6">
             <button
               type="button"
               onClick={toggleTheme}
